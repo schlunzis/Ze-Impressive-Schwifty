@@ -10,11 +10,12 @@ import java.util.List;
  * polynomial, which makes working with polynomials much easier.
  *
  * @author JayPi4c
+ * @since 0.0.1
  */
 public class Polynomial {
 
     /**
-     * a polynomial is a collection of monomials, which are stored in this array
+     * A polynomial is a collection of monomials, which are stored in this array
      */
     private List<Monomial> polynomial;
 
@@ -28,17 +29,17 @@ public class Polynomial {
     /**
      * Create a polynomial from an array of monomials.
      *
-     * @param monomials
+     * @param monomials array of monomials to construct the polynomial
      */
     public Polynomial(Monomial... monomials) {
-        polynomial = new ArrayList<>(Arrays.asList(monomials));
+        polynomial = Arrays.asList(monomials);
         this.fill();
     }
 
     /**
-     * Create a polynomial from an ArrayList of monomials.
+     * Create a polynomial from a List of monomials.
      *
-     * @param monomials
+     * @param monomials List of monomials to construct the polynomial
      */
     public Polynomial(List<Monomial> monomials) {
         this.polynomial = new ArrayList<>();
@@ -52,9 +53,15 @@ public class Polynomial {
 
     /**
      * Create a polynomial with the degrees and coefficients.
+     * The coefficients and degrees must be of the same length.
+     * Example usage:
+     * <pre>
+     *     // f(x) = 2x + 0.5x^3
+     *     Polynomial p = new Polynomial(new double[]{2, 0.5}, new int[]{1, 3});
+     * </pre>
      *
-     * @param coefficients
-     * @param degrees
+     * @param coefficients array of coefficients
+     * @param degrees      array of degrees
      * @throws IllegalArgumentException if coefficients and degrees are not of same
      *                                  length
      */
@@ -68,13 +75,13 @@ public class Polynomial {
     }
 
     /**
-     * Adds the polynomial to the polynomial
+     * Adds the polynomial to the polynomial.
      *
-     * @param p
-     * @return this after math is done
+     * @param polynomial the polynomial to add
+     * @return this after addition is done
      */
-    public Polynomial add(Polynomial p) {
-        this.polynomial.addAll(p.getPolynomial());
+    public Polynomial add(Polynomial polynomial) {
+        this.polynomial.addAll(polynomial.getPolynomial());
         this.combine();
         this.reorder();
         this.fill();
@@ -82,13 +89,13 @@ public class Polynomial {
     }
 
     /**
-     * Adds the monomial to the polynomial
+     * Adds the monomial to the polynomial.
      *
-     * @param t
-     * @return this after math is done
+     * @param monomial the monomial to add
+     * @return this after addition is done
      */
-    public Polynomial add(Monomial t) {
-        this.polynomial.add(t);
+    public Polynomial add(Monomial monomial) {
+        this.polynomial.add(monomial);
         this.combine();
         this.reorder();
         this.fill();
@@ -102,8 +109,8 @@ public class Polynomial {
      * @return this after math is done
      */
     public Polynomial mult(double scl) {
-        for (Monomial t : this.polynomial)
-            t.mult(scl);
+        for (Monomial m : this.polynomial)
+            m.mult(scl);
         this.fill();
         return this;
     }
@@ -111,15 +118,15 @@ public class Polynomial {
     /**
      * Returns the product of the two polynomials.
      *
-     * @param p
-     * @return this
+     * @param polynomial the polynomial to multiply with
+     * @return this after multiplication is done
      */
-    public Polynomial mult(Polynomial p) {
-        ArrayList<Monomial> monomials = new ArrayList<>();
-        for (Monomial t : this.polynomial) {
-            for (Monomial other : p.getPolynomial()) {
+    public Polynomial mult(Polynomial polynomial) {
+        List<Monomial> monomials = new ArrayList<>();
+        for (Monomial m : this.polynomial) {
+            for (Monomial other : polynomial.getPolynomial()) {
                 monomials.add(
-                        new Monomial(t.getCoefficient() * other.getCoefficient(), t.getDegree() + other.getDegree()));
+                        new Monomial(m.getCoefficient() * other.getCoefficient(), m.getDegree() + other.getDegree()));
             }
         }
         this.polynomial = monomials;
@@ -130,7 +137,13 @@ public class Polynomial {
     }
 
     /**
-     * This function combines the monomials with the same degrees.
+     * This function combines the monomials with the same degrees. Example:
+     * <pre>
+     *     // f(x) = 2x + 5x +x^2
+     *     Polynomial p = new Polynomial(new Monomial(2, 1), new Monomial(5, 1), new Monomial(1, 2));
+     *     p.combine();
+     *     // f(x) = 7x + x^2
+     * </pre>
      */
     public void combine() {
         for (int i = 0; i < this.polynomial.size() - 1; i++) {
@@ -146,7 +159,7 @@ public class Polynomial {
     }
 
     /**
-     * This function sorts the polynomial by degree.
+     * This function sorts the polynomial by degree. This might be used before printing the polynomial.
      */
     public void reorder() {
         for (int i = 0; i < this.polynomial.size(); i++) {
@@ -171,15 +184,19 @@ public class Polynomial {
     public void fill() {
         for (int i = this.getDegree(); i >= 0; i--) {
             boolean found = false;
-            for (Monomial t : this.polynomial)
-                if (found = i == t.getDegree())
+            for (Monomial t : this.polynomial) {
+                found = i == t.getDegree();
+                if (found)
                     break;
+            }
             if (!found)
                 this.polynomial.add(this.getDegree() - i, new Monomial(0, i));
         }
     }
 
     /**
+     * Returns the derivation of the polynomial.
+     *
      * @return a new derived polynomial
      */
     public Polynomial getDerivation() {
@@ -207,9 +224,12 @@ public class Polynomial {
 
     /**
      * Prints the Polynomial into the PrintStream.
+     *
+     * @param stream PrintStream to print the Polynomial
+     * @deprecated
      */
     public void print(PrintStream stream) {
-        stream.println(getFormular());
+        stream.println(getFormula());
     }
 
     // https://de.wikipedia.org/wiki/Polynomdivision#Algorithmus
@@ -227,46 +247,45 @@ public class Polynomial {
     /**
      * Returns the string of the polynomial.
      *
-     * @return Formular of Polynomial
+     * @return Formula of Polynomial
      */
-    public String getFormular() {
-        String s = "";
+    public String getFormula() {
+        StringBuilder builder = new StringBuilder();
         for (int i = 0; i < this.polynomial.size() - 1; i++) {
-            s += this.polynomial.get(i).toString();
-            s += this.polynomial.get(i + 1).getCoefficient() < 0 ? "" : "+";
+            builder.append(this.polynomial.get(i).toString());
+            builder.append(this.polynomial.get(i + 1).getCoefficient() < 0 ? "" : "+");
         }
-        s += this.polynomial.get(this.polynomial.size() - 1).toString();
-        return s;
+        builder.append(this.polynomial.getLast().toString());
+        return builder.toString();
     }
 
     /**
      * Returns the string of the formatted polynomial.
      *
-     * @return formatted Formular of Polynomial
+     * @return formatted formula of Polynomial
      */
-    public String getFormularFormatted() {
-        String s = "";
+    public String getFormulaFormatted() {
+        StringBuilder builder = new StringBuilder();
         for (int i = 0; i < this.polynomial.size() - 1; i++) {
-            s += this.polynomial.get(i).toStringFormatted();
-            s += this.polynomial.get(i + 1).getCoefficient() < 0 ? "" : "+";
+            builder.append(this.polynomial.get(i).toStringFormatted());
+            builder.append(this.polynomial.get(i + 1).getCoefficient() < 0 ? "" : "+");
         }
-        if (this.polynomial.size() > 0)
-            s += this.polynomial.get(this.polynomial.size() - 1).toStringFormatted();
-        return s;
+        if (!this.polynomial.isEmpty())
+            builder.append(this.polynomial.getLast().toStringFormatted());
+        return builder.toString();
 
     }
 
     /**
-     * With the Newton's method one can get closer and closer to the zero point by
+     * With Newton's method one can get closer and closer to the zero point by
      * approximation, provided one has an initial guess.
      *
-     * @param guess
-     * @param n
+     * @param guess initial guess
+     * @param n     number of iterations
      * @return Approximation of x for the root
      * @see <a href="https://en.wikipedia.org/wiki/Newton%27s_method">Wikipedia
      * Newton Method</a>
      */
-
     public double getRoot(double guess, int n) {
         double new_guess = guess - (this.getY(guess) / this.getDerivation().getY(guess));
         if (n == 0)
@@ -277,7 +296,7 @@ public class Polynomial {
     /**
      * Calculate y for a given x.
      *
-     * @param x
+     * @param x x value
      * @return calculated y
      */
     public double getY(double x) {
@@ -294,7 +313,7 @@ public class Polynomial {
     /**
      * Returns the list of monomials representing the polynomial.
      *
-     * @return Monomial ArrayList
+     * @return Monomial list
      */
     public List<Monomial> getPolynomial() {
         return this.polynomial;

@@ -4,7 +4,10 @@ import java.math.RoundingMode;
 import java.text.DecimalFormat;
 
 /**
+ * Represents a monomial with a coefficient and a degree.
+ *
  * @author JayPi4c
+ * @since 0.0.1
  */
 public class Monomial {
 
@@ -12,10 +15,10 @@ public class Monomial {
     private double coefficient;
 
     /**
-     * Create a monomial with the coefficient and degree.
+     * Creates a monomial with coefficient and degree.
      *
-     * @param coefficient
-     * @param degree
+     * @param coefficient the coefficient of the monomial
+     * @param degree      the degree of the monomial
      */
     public Monomial(double coefficient, int degree) {
         this.coefficient = coefficient;
@@ -23,9 +26,9 @@ public class Monomial {
     }
 
     /**
-     * Create a monomial with the specified coefficient and degree 0.
+     * Creates a monomial with the specified coefficient and degree 0.
      *
-     * @param coefficient
+     * @param coefficient the coefficient of the monomial
      */
     public Monomial(double coefficient) {
         this.coefficient = coefficient;
@@ -33,9 +36,9 @@ public class Monomial {
     }
 
     /**
-     * Create a monomial with the specified degree and the coefficient 1.
+     * Creates a monomial with the specified degree and the coefficient 1.
      *
-     * @param degree
+     * @param degree the degree of the monomial
      */
     public Monomial(int degree) {
         this.degree = degree;
@@ -45,28 +48,30 @@ public class Monomial {
     // ------------------FUNCTIONS-----------------
 
     /**
-     * @param t
+     * Checks if two monomials have the same degree and are therefore combinable.
+     *
+     * @param m the monomial to check combinability with
      * @return true, if same degree
      */
-    public boolean isCombinable(Monomial t) {
-        return this.degree == t.getDegree();
+    public boolean isCombinable(Monomial m) {
+        return this.degree == m.getDegree();
     }
 
     /**
      * If two monomials have the same degree, then the monomials can be combined.
      *
-     * @param t the monomial that is combined with the calling one.
+     * @param m the monomial that is combined with the calling one.
      * @return this
      */
-    public Monomial combine(Monomial t) {
-        if (!this.isCombinable(t))
+    public Monomial combine(Monomial m) {
+        if (!this.isCombinable(m))
             throw new IllegalArgumentException("These parts cannot be combined!");
-        this.coefficient += t.getCoefficient();
+        this.coefficient += m.getCoefficient();
         return this;
     }
 
     /**
-     * Derive the monomial.
+     * Derives the monomial.
      *
      * @return derived monomial
      */
@@ -77,7 +82,7 @@ public class Monomial {
     /**
      * Multiply the monomial by the scalar.
      *
-     * @param scl
+     * @param scl the scalar to multiply with
      * @return this
      */
     public Monomial mult(double scl) {
@@ -96,8 +101,9 @@ public class Monomial {
     }
 
     /**
-     * Returns the monomial in formatted version.
+     * Returns the monomial as formatted string.
      *
+     * @param pattern pattern for the decimal format
      * @return formatted Monomial
      */
     public String toStringFormatted(String pattern) {
@@ -106,6 +112,11 @@ public class Monomial {
         return coefficient == 0 ? "" : (df.format(coefficient) + (this.degree > 0 ? "x^" + this.degree : ""));
     }
 
+    /**
+     * Returns the monomial as formatted string with default pattern.
+     *
+     * @return formatted Monomial
+     */
     public String toStringFormatted() {
         return toStringFormatted("#.####");
     }
@@ -115,7 +126,7 @@ public class Monomial {
     /**
      * Returns the degree of the calling monomial.
      *
-     * @return degree
+     * @return degree of the monomial
      */
     public int getDegree() {
         return this.degree;
@@ -124,7 +135,7 @@ public class Monomial {
     /**
      * Sets the degree of the calling monomial.
      *
-     * @param degree
+     * @param degree the degree to set
      */
     public void setDegree(int degree) {
         this.degree = degree;
@@ -133,7 +144,7 @@ public class Monomial {
     /**
      * Returns the coefficient of the calling monomial.
      *
-     * @return coefficient
+     * @return coefficient of the monomial
      */
     public double getCoefficient() {
         return this.coefficient;
@@ -142,13 +153,15 @@ public class Monomial {
     /**
      * Sets the coefficient of the calling monomial.
      *
-     * @param coefficient
+     * @param coefficient the coefficient to set
      */
     public void setCoefficient(double coefficient) {
         this.coefficient = coefficient;
     }
 
     /**
+     * Copies the monomial.
+     *
      * @return an independent copy of the calling monomial.
      */
     public Monomial copy() {
