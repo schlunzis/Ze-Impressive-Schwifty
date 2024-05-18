@@ -1,12 +1,10 @@
-package org.schlunzis.zis.math;
+package org.schlunzis.zis.math.analysis;
 
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
 
 /**
- *
  * @author JayPi4c
- *
  */
 public class Monomial {
 
@@ -45,8 +43,8 @@ public class Monomial {
     }
 
     // ------------------FUNCTIONS-----------------
+
     /**
-     *
      * @param t
      * @return true, if same degree
      */
@@ -151,7 +149,6 @@ public class Monomial {
     }
 
     /**
-     *
      * @return an independent copy of the calling monomial.
      */
     public Monomial copy() {
