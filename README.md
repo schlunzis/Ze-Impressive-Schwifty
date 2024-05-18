@@ -21,6 +21,7 @@ The modules are published on maven central. To use them add the dependency to yo
 The following lists shows projects that use the `Ze-Impressive-Schwifty` modules and can be used as examples: 
 - [Polynomial-Regression](https://github.com/JayPi4c/Polynomial-regression)
 - [Neuro-Evolution-Vehicles](https://github.com/theBrainsGD/NeuroEvolutionVehicles)
+- [Kurtama](https://github.com/schlunzis/Kurtama)
 
 (The examples use the code provided by the `Ze-Impressive-Schwifty` modules. They may not already use the maven 
 dependencies from maven central. This is about to change soonish...)
