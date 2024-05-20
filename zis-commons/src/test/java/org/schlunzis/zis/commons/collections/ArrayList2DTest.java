@@ -88,7 +88,7 @@ class ArrayList2DTest {
         ArrayList2D<Object> list = new ArrayList2D<>();
         assertEquals(0, list.size());
         assertFalse(list.iterator().hasNext());
-        assertFalse(list.listIterator().hasNext());
+        assertFalse(list.rowIterator().hasNext());
         assertTrue(list.isEmpty());
     }
 
@@ -103,7 +103,7 @@ class ArrayList2DTest {
         ArrayList2D<Object> list = new ArrayList2D<>(5, 3);
         assertEquals(0, list.size());
         assertFalse(list.iterator().hasNext());
-        assertFalse(list.listIterator().hasNext());
+        assertFalse(list.rowIterator().hasNext());
         assertTrue(list.isEmpty());
     }
 
@@ -310,16 +310,16 @@ class ArrayList2DTest {
     //##################################################
 
     @Test
-    void shortestListEmptyTest() {
+    void shortestRowEmptyTest() {
         ArrayList2D<Object> list = new ArrayList2D<>();
-        assertEquals(0, list.shortestList().size());
+        assertEquals(0, list.shortestRow().size());
     }
 
     @Test
-    void shortestListTest() {
+    void shortestRowTest() {
         ArrayList2D<Object> list = defaultList;
-        assertEquals(1, list.shortestList().size());
-        assertEquals(defaultArray[2][0], list.shortestList().getFirst());
+        assertEquals(1, list.shortestRow().size());
+        assertEquals(defaultArray[2][0], list.shortestRow().getFirst());
     }
 
     //##################################################
@@ -343,18 +343,18 @@ class ArrayList2DTest {
     //##################################################
 
     @Test
-    void longestListEmptyTest() {
+    void longestRowEmptyTest() {
         ArrayList2D<Object> list = new ArrayList2D<>();
-        assertEquals(0, list.longestList().size());
+        assertEquals(0, list.longestRow().size());
     }
 
     @Test
-    void longestListTest() {
+    void longestRowTest() {
         ArrayList2D<Object> list = defaultList;
-        assertEquals(3, list.longestList().size());
-        assertEquals(defaultArray[1][0], list.longestList().getFirst());
-        assertEquals(defaultArray[1][1], list.longestList().get(1));
-        assertEquals(defaultArray[1][2], list.longestList().get(2));
+        assertEquals(3, list.longestRow().size());
+        assertEquals(defaultArray[1][0], list.longestRow().getFirst());
+        assertEquals(defaultArray[1][1], list.longestRow().get(1));
+        assertEquals(defaultArray[1][2], list.longestRow().get(2));
     }
 
     //##################################################
@@ -362,20 +362,20 @@ class ArrayList2DTest {
     //##################################################
 
     @Test
-    void addToShortestEmptyTest() {
+    void addToShortestRowEmptyTest() {
         ArrayList2D<Object> list = new ArrayList2D<>();
         Object o1 = new Object();
-        list.addToShortest(o1);
+        list.addToShortestRow(o1);
         assertEquals(1, list.size());
         assertEquals(1, list.size(0));
         assertEquals(o1, list.get(0, 0));
     }
 
     @Test
-    void addToShortestTest() {
+    void addToShortestRowTest() {
         ArrayList2D<Object> list = defaultList;
         Object o1 = new Object();
-        list.addToShortest(o1);
+        list.addToShortestRow(o1);
         assertEquals(2, list.size(2));
         assertArrayEquals(defaultArray[0], list.get(0).toArray());
         assertArrayEquals(defaultArray[1], list.get(1).toArray());
@@ -388,20 +388,20 @@ class ArrayList2DTest {
     //##################################################
 
     @Test
-    void addToLongestEmptyTest() {
+    void addToLongestRowEmptyTest() {
         ArrayList2D<Object> list = new ArrayList2D<>();
         Object o1 = new Object();
-        list.addToLongest(o1);
+        list.addToLongestRow(o1);
         assertEquals(1, list.size());
         assertEquals(1, list.size(0));
         assertEquals(o1, list.get(0, 0));
     }
 
     @Test
-    void addToLongestTest() {
+    void addToLongestRowTest() {
         ArrayList2D<Object> list = defaultList;
         Object o1 = new Object();
-        list.addToLongest(o1);
+        list.addToLongestRow(o1);
         assertEquals(4, list.size(1));
         assertArrayEquals(defaultArray[0], list.get(0).toArray());
         assertArrayEquals(defaultArray[2], list.get(2).toArray());

@@ -2,7 +2,7 @@ package org.schlunzis.zis.commons.collections;
 
 import java.util.*;
 
-public class ArrayList2D<E> extends AbstractCollection<E> implements List2D<E>, RandomAccess {
+public class ArrayList2D<E> extends AbstractList2D<E> implements RandomAccess {
 
     private static final int DEFAULT_CAPACITY = 10;
 
@@ -60,7 +60,7 @@ public class ArrayList2D<E> extends AbstractCollection<E> implements List2D<E>, 
     }
 
     @Override
-    public Iterator<List<E>> listIterator() {
+    public Iterator<List<E>> rowIterator() {
         return elementData.iterator();
     }
 
@@ -98,7 +98,7 @@ public class ArrayList2D<E> extends AbstractCollection<E> implements List2D<E>, 
     }
 
     @Override
-    public void addList(List<E> newRow) {
+    public void addRow(List<E> newRow) {
         Objects.requireNonNull(newRow, "New row must not be null.");
         elementData.add(newRow);
     }
@@ -116,11 +116,11 @@ public class ArrayList2D<E> extends AbstractCollection<E> implements List2D<E>, 
     @Override
     public E[] shortestArray(E[] array) {
         Objects.requireNonNull(array, "Array must not be null.");
-        return shortestList().toArray(array);
+        return shortestRow().toArray(array);
     }
 
     @Override
-    public List<E> shortestList() {
+    public List<E> shortestRow() {
         if (elementData.isEmpty()) return new ArrayList<>();
         List<E> shortestList = elementData.getFirst();
         for (int i = 1; i < elementData.size(); i++) {
@@ -132,11 +132,11 @@ public class ArrayList2D<E> extends AbstractCollection<E> implements List2D<E>, 
 
     @Override
     public E[] longestArray(E[] array) {
-        return longestList().toArray(array);
+        return longestRow().toArray(array);
     }
 
     @Override
-    public List<E> longestList() {
+    public List<E> longestRow() {
         if (elementData.isEmpty()) return new ArrayList<>();
         List<E> longestList = elementData.getFirst();
         for (int i = 1; i < elementData.size(); i++) {
@@ -147,17 +147,17 @@ public class ArrayList2D<E> extends AbstractCollection<E> implements List2D<E>, 
     }
 
     @Override
-    public boolean addToShortest(E element) {
+    public boolean addToShortestRow(E element) {
         if (elementData.isEmpty())
             elementData.add(new ArrayList<>());
-        return shortestList().add(element);
+        return shortestRow().add(element);
     }
 
     @Override
-    public boolean addToLongest(E element) {
+    public boolean addToLongestRow(E element) {
         if (elementData.isEmpty())
             elementData.add(new ArrayList<>());
-        return longestList().add(element);
+        return longestRow().add(element);
     }
 
     @Override
