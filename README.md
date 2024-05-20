@@ -9,7 +9,6 @@ The modules are published on maven central. To use them add the dependency to yo
 `zis-commons` module add the following block:
 
 ```xml
-
 <dependency>
     <groupId>org.schlunzis.zis</groupId>
     <artifactId>zis-commons</artifactId>
@@ -19,12 +18,15 @@ The modules are published on maven central. To use them add the dependency to yo
 
 ### Jitpack
 
-To access new features that are not yet published on maven central you can use `jitpack`. Add the following repository
-to
-your `pom.xml`:
+To access new features that are not yet published on maven central you can use `jitpack`.
+
+> [!WARNING]
+> Features in development might contain severe bugs.
+
+Add the following repository
+to your `pom.xml`:
 
 ```xml
-
 <repositories>
     <repository>
         <id>jitpack.io</id>
@@ -36,7 +38,6 @@ your `pom.xml`:
 Then you can add the dependency like this (with short commit hash as version):
 
 ```xml
-
 <dependency>
     <groupId>com.github.schlunzis.ze-impressive-schwifty</groupId>
     <artifactId>zis-commons</artifactId>
