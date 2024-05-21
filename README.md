@@ -60,4 +60,6 @@ dependencies from maven central. This is about to change soonish...)
 
 ## License
 
-tbd
+[MIT](https://www.opensource.org/licenses/mit-license.php)
+
+Copyright (c) 2024 schlunzis
