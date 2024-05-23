@@ -32,8 +32,7 @@ public class Polynomial {
      * @param monomials array of monomials to construct the polynomial
      */
     public Polynomial(Monomial... monomials) {
-        polynomial = Arrays.asList(monomials);
-        this.fill();
+        polynomial = new ArrayList<>(Arrays.asList(monomials));
     }
 
     /**
@@ -42,13 +41,7 @@ public class Polynomial {
      * @param monomials List of monomials to construct the polynomial
      */
     public Polynomial(List<Monomial> monomials) {
-        this.polynomial = new ArrayList<>();
-        for (Monomial t : monomials)
-            this.polynomial.add(t.copy());
-        this.combine();
-        this.fill();
-        this.reorder();
-
+        this.polynomial = monomials;
     }
 
     /**
@@ -71,7 +64,6 @@ public class Polynomial {
         this.polynomial = new ArrayList<>();
         for (int i = 0; i < coefficients.length; i++)
             this.polynomial.add(new Monomial(coefficients[i], degrees[i]));
-        this.fill();
     }
 
     /**
@@ -82,9 +74,6 @@ public class Polynomial {
      */
     public Polynomial add(Polynomial polynomial) {
         this.polynomial.addAll(polynomial.getPolynomial());
-        this.combine();
-        this.reorder();
-        this.fill();
         return this;
     }
 
@@ -96,9 +85,6 @@ public class Polynomial {
      */
     public Polynomial add(Monomial monomial) {
         this.polynomial.add(monomial);
-        this.combine();
-        this.reorder();
-        this.fill();
         return this;
     }
 
@@ -111,7 +97,6 @@ public class Polynomial {
     public Polynomial mult(double scl) {
         for (Monomial m : this.polynomial)
             m.mult(scl);
-        this.fill();
         return this;
     }
 
@@ -130,9 +115,6 @@ public class Polynomial {
             }
         }
         this.polynomial = monomials;
-        this.combine();
-        this.reorder();
-        this.fill();
         return this;
     }
 

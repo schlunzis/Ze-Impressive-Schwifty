@@ -76,7 +76,8 @@ public class Monomial {
      * @return derived monomial
      */
     public Monomial getDerivation() {
-        return new Monomial(this.coefficient * this.degree, this.degree - 1);
+        int degree = Math.max(this.degree - 1, 0);
+        return new Monomial(this.coefficient * this.degree, degree);
     }
 
     /**
