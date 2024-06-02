@@ -1,16 +1,20 @@
 package org.schlunzis.zis.math.linear;
 
 /**
- * @author jaypi4c
- * @version 1.0.0
+ * A Vector is a simplified version of a matrix, which only has one column.
+ *
+ * @author JayPi4c
+ * @version 0.0.1
  */
 public class Vector {
-    int rows;
-    double data[];
+
+    private double data[];
+    private int rows;
 
     /**
-     * @param rows
-     * @since 1.0.0
+     * Creates an empty vector with the given size.
+     *
+     * @param rows size of the vector
      */
     public Vector(int rows) {
         this.rows = rows;
@@ -18,61 +22,78 @@ public class Vector {
     }
 
     /**
-     * @param data
-     * @since 1.0.0
+     * Creates a vector with the given data.
+     *
+     * @param data data of the vector
      */
-    public Vector(double data[]) {
-        this.data = new double[data.length];
-        for (int i = 0; i < data.length; i++)
-            this.data[i] = data[i];
+    public Vector(double[] data) {
+        this.rows = data.length;
+        this.data = new double[rows];
+        System.arraycopy(data, 0, this.data, 0, data.length);
     }
 
     /**
-     * @return
-     * @since 1.0.0
+     * Converts the vector back to an array.
+     *
+     * @return vector data in an array
      */
     public double[] toArray() {
         double[] d = new double[rows];
-        for (int i = 0; i < data.length; i++)
-            d[i] = data[i];
+        System.arraycopy(data, 0, d, 0, data.length);
         return d;
     }
 
     /**
-     * @return
-     * @since 1.0.0
+     * Creates an independent  copy of the vector.
+     *
+     * @return a copy of the vector
      */
     public Vector copy() {
         return new Vector(this.data);
     }
 
     /**
-     * @since 1.0.0
+     * Prints the vector to the console.
      */
     public void print() {
         System.out.println("-------------------------------------------------");
-        for (int i = 0; i < this.data.length; i++)
-            System.out.print(data[i] + "\t");
+        for (double d : this.data) System.out.print(d + "\t");
         System.out.println(")^T");
         System.out.println("-------------------------------------------------");
     }
 
     /**
-     * @return
-     * @since 1.0.0
+     * Returns the data of the vector. This is a reference to the data, so changes to the data will affect the vector.
+     *
+     * @return data of the vector
      */
     public double[] getData() {
         return this.data;
     }
 
     /**
-     * @param index
-     * @return
-     * @since 1.0.0
+     * Returns the value at the given index.
+     *
+     * @param index index of the value
+     * @return value at the index
+     * @throws IndexOutOfBoundsException if the index is not in the data
      */
     public double get(int index) {
         if (index >= data.length || index < 0)
-            throw new IllegalArgumentException("Der index ist nicht in der data vorhanden!");
+            throw new IndexOutOfBoundsException("Der index ist nicht in der data vorhanden!");
         return this.data[index];
+    }
+
+    /**
+     * Sets the value at the given index.
+     *
+     * @param index index of the value
+     * @param value new value
+     * @throws IndexOutOfBoundsException if the index is not in the data
+     */
+    public void set(int index, double value) {
+        if (index >= data.length || index < 0)
+            throw new IndexOutOfBoundsException("Der index ist nicht in der data vorhanden!");
+        this.data[index] = value;
     }
 }
