@@ -1,7 +1,6 @@
 package org.schlunzis.zis.math.linear;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.function.Executable;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -40,12 +39,7 @@ class MatrixTest {
         m = new Matrix(new double[][]{{6, 3, 4}, {8, 9, 3}, {7, 4, 3}});
         assertEquals(-43, m.det());
 
-        assertThrows(IllegalArgumentException.class, new Executable() {
-            @Override
-            public void execute() throws Throwable {
-                new Matrix(new double[][]{{2, 3, 4}, {4, 5, 6}}).det();
-            }
-        });
+        assertThrows(IllegalArgumentException.class, () -> new Matrix(new double[][]{{2, 3, 4}, {4, 5, 6}}).det());
     }
 
     @Test
@@ -55,17 +49,17 @@ class MatrixTest {
         Matrix m = new Matrix(new double[][]{{1, 2}, {3, 4}});
         Matrix m1 = new Matrix(new double[][]{{3, 4}, {4, 5}});
         Matrix target = new Matrix(new double[][]{{3, 8}, {12, 20}});
-        Matrix result = Matrix.mult(m, m1);
+        Matrix result = Matrix.hadamard(m, m1);
         assertTrue(Matrix.equals(target, result));
-        assertTrue(Matrix.equals(target, m.mult(m1)));
+        assertTrue(Matrix.equals(target, m.hadamard(m1)));
 
         // dot product
         m = new Matrix(new double[][]{{1, 2}, {3, 4}});
         m1 = new Matrix(new double[][]{{3, 4}, {4, 5}});
         target = new Matrix(new double[][]{{11, 14}, {25, 32}});
-        result = Matrix.dot(m, m1);
+        result = Matrix.matmul(m, m1);
         assertTrue(Matrix.equals(target, result));
-        assertTrue(Matrix.equals(target, m.dot(m1)));
+        assertTrue(Matrix.equals(target, m.matmul(m1)));
 
         // scaling
         m = new Matrix(new double[][]{{2, 4}, {1, 3}});

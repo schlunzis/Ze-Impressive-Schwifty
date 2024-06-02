@@ -3,18 +3,21 @@ package org.schlunzis.zis.math.linear;
 import java.io.PrintStream;
 import java.io.Serial;
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
+ * This class represents a Matrix and offers the possibility to work with it.
+ *
  * @author JayPi4c
- * @version 1.2.0
+ * @since 0.0.1
  */
 public class Matrix implements Serializable {
 
     @Serial
-    private static final long serialVersionUID = -1611903368454112326L;
-    int rows, cols;
-    double[][] data;
+    private static final long serialVersionUID = 1L;
+    private double[][] data;
+    private int rows, cols;
 
     /**
      * Creates a Matrix with specified number of rows and columns, initialized with
@@ -22,7 +25,6 @@ public class Matrix implements Serializable {
      *
      * @param rows Number of rows of the new Matrix
      * @param cols Number of columns of the new Matrix
-     * @since 1.0.0
      */
     public Matrix(int rows, int cols) {
         this.rows = rows;
@@ -33,37 +35,17 @@ public class Matrix implements Serializable {
     /**
      * Creates a Matrix from a given two-dimensional Array
      *
-     * @param data
-     * @since 1.0.0
+     * @param data two-dimensional Array to create the Matrix from
      */
     public Matrix(double[][] data) {
         this.rows = data.length;
         this.cols = data[0].length;
-        this.data = new double[this.rows][this.cols];
-        for (int row = 0; row < this.rows; row++)
-            for (int col = 0; col < this.cols; col++)
-                this.data[row][col] = data[row][col];
+        this.data = Arrays.stream(data).map(double[]::clone).toArray(double[][]::new);
     }
 
     /**
-     * Creates a two-dimensional Array from the given Matrix
-     *
-     * @param m
-     * @return
-     * @since 1.0.0
-     */
-    public static double[][] toArray(Matrix m) {
-        double[][] output = new double[m.rows][m.cols];
-        for (int row = 0; row < m.rows; row++)
-            for (int col = 0; col < m.cols; col++)
-                output[row][col] = m.data[row][col];
-        return output;
-    }
-
-    /**
-     * @param matrix
-     * @return
-     * @since 1.0.0
+     * @param matrix the matrix to transpose
+     * @return the transposed matrix
      */
     public static Matrix transpose(Matrix matrix) {
         Matrix newMatrix = new Matrix(matrix.cols, matrix.rows);
@@ -74,12 +56,13 @@ public class Matrix implements Serializable {
     }
 
     /**
-     * @param a
-     * @param b
-     * @return
-     * @since 1.0.0
+     * Calculates the product of two matrices.
+     *
+     * @param a the first matrix
+     * @param b the second matrix
+     * @return the product of both matrices
      */
-    public static Matrix dot(Matrix a, Matrix b) {
+    public static Matrix matmul(Matrix a, Matrix b) {
         if (a.cols != b.rows)
             throw new IllegalArgumentException("A's cols and B's rows must match!");
 
@@ -93,10 +76,11 @@ public class Matrix implements Serializable {
     }
 
     /**
-     * @param a
-     * @param b
-     * @return
-     * @since 1.0.0
+     * Subtracts the second matrix from the first one.
+     *
+     * @param a the first matrix
+     * @param b the second matrix
+     * @return the difference of both matrices
      */
     public static Matrix sub(Matrix a, Matrix b) {
         if (a.cols != b.cols || a.rows != b.rows)
@@ -109,10 +93,11 @@ public class Matrix implements Serializable {
     }
 
     /**
-     * @param d
-     * @param m
-     * @return
-     * @since 1.0.0
+     * Creates a matrix with the difference d - entry in each entry.
+     *
+     * @param d the value to subtract from
+     * @param m the matrix to subtract
+     * @return the difference of the matrix and the value
      */
     public static Matrix sub(double d, Matrix m) {
         Matrix newMatrix = new Matrix(m.rows, m.cols);
@@ -123,10 +108,11 @@ public class Matrix implements Serializable {
     }
 
     /**
-     * @param a
-     * @param b
-     * @return
-     * @since 1.0.0
+     * Adds two matrices.
+     *
+     * @param a the first matrix
+     * @param b the second matrix
+     * @return the sum of both matrices
      */
     public static Matrix add(Matrix a, Matrix b) {
         if (a.cols != b.cols || a.rows != b.rows)
@@ -140,10 +126,11 @@ public class Matrix implements Serializable {
     }
 
     /**
-     * @param m
-     * @param scl
-     * @return
-     * @since 1.0.0
+     * Creates a matrix multiplied by a scalar.
+     *
+     * @param m   the matrix to multiply
+     * @param scl the scalar to multiply with
+     * @return the scaled matrix
      */
     public static Matrix mult(Matrix m, double scl) {
         Matrix newMatrix = new Matrix(m.rows, m.cols);
@@ -154,14 +141,13 @@ public class Matrix implements Serializable {
     }
 
     /**
-     * the hadamard product
+     * Calculates the hadamard product
      *
-     * @param a
-     * @param b
-     * @return the product of both matrices
-     * @since 1.2.0
+     * @param a the first matrix
+     * @param b the second matrix
+     * @return the hadamard product of both matrices
      */
-    public static Matrix mult(Matrix a, Matrix b) {
+    public static Matrix hadamard(Matrix a, Matrix b) {
         if (a.cols != b.cols || a.rows != b.rows)
             throw new IllegalArgumentException("rows and columns must match!");
         Matrix newMatrix = new Matrix(a.rows, b.cols);
@@ -172,167 +158,12 @@ public class Matrix implements Serializable {
     }
 
     /**
-     * Dieser Code stammt von: <a href=
-     * "https://wiki.freitagsrunde.org/Javakurs/%C3%9Cbungsaufgaben/Gau%C3%9F-Algorithmus/Musterloesung">https://wiki.freitagsrunde.org</a>
+     * Checks for equality of two matrices.
      *
-     * @param m
-     * @param v
-     * @return
-     * @since 1.1.0
+     * @param m1 the first matrix
+     * @param m2 the second matrix
+     * @return true if the matrices are equal, false otherwise
      */
-    public static Vector getSolution(Matrix m, Vector v) {
-        Vector vector = v.copy();
-        // Das Gleichungssystem hat keine eindeutige Loesung!
-        if (m.data.length < m.data[0].length)
-            throw new IllegalArgumentException("Gleichungssystem nicht eindeutig loesbar!");
-
-        // Merken der Spalte, welche eine Zahl ungleich null besitzt
-        int tmpColumn = -1;
-
-        // Alle Zeilen durchgehen: Ziel der for-Schleife -> Matrix in
-        // Zeilenstufenform bringen!
-        // -> Alle Zahlen unterhalb der Diagonale sind null
-        for (int line = 0; line < m.data.length; line++) {
-            tmpColumn = -1;
-
-            // Umformungsschritt 1: Finden einer Spalte mit einem Wert ungleich
-            // null
-            for (int column = 0; column < m.data[line].length; column++) {
-                for (int row = line; row < m.data.length; row++) {
-                    if (m.data[row][column] != 0) {
-                        tmpColumn = column;
-                        break;
-                    }
-                }
-
-                // Abbruch, zahl ungleich null wurde gefunden
-                if (tmpColumn != -1) {
-                    break;
-                }
-            }
-
-            // NullZeile(n) entdeckt!
-            if (tmpColumn == -1) {
-                for (int row = line; row < m.data.length; row++) {
-                    // Gleichungssystem hat keine Loesung!
-                    if (vector.data[line] != 0)
-                        throw new IllegalArgumentException("Gleichungssystem besitzt keine Loesung!");
-                }
-                // Nullzeile(n) vorhanden -> Ist das System noch eindeutig
-                // loesbar?
-                if (m.data[0].length - 1 >= line) {
-                    // System nicht eindeutig loesbar.
-                    throw new IllegalArgumentException("Gleichungssystem nicht eindeutig loesbar!");
-                }
-                break;
-            }
-
-            // Umformungsschritt 2: Die Zahl matrix[line][tmpColumn] soll
-            // UNgleich null sein
-            if (m.data[line][tmpColumn] == 0) {
-                for (int row = line + 1; row < m.data.length; row++) {
-                    if (m.data[row][tmpColumn] != 0) {
-
-                        // Vertauschen von Zeilen -> matrix[line][tmpColumn]
-                        // wird dann ungleich null
-                        swapTwoLines(line, row, m.data, vector);
-                        break;
-                    }
-                }
-            }
-
-            // Umformungsschritt 3: matrix[line][tmpColumn] soll gleich 1 sein.
-            if (m.data[line][tmpColumn] != 0) {
-
-                // Division der Zeile mit matrix[line][tmpColumn]
-                divideLine(line, m.data[line][tmpColumn], m.data, vector);
-            }
-
-            // Umformungsschritt 4: Alle Zahlen unter matrix[line][tmpColumn]
-            // sollen null sein.
-            for (int row = line + 1; row < m.data.length; row++) {
-
-                // Subtraktion damit unter der Zahl im Umformungsschritt 3 nur
-                // nullen stehen
-                removeRowLeadingNumber(m.data[row][tmpColumn], line, row, m.data, vector);
-            }
-        }
-
-        // Umformungsschritt 6: Matrix in Normalform bringen (Zahlen oberhalb
-        // der Diagonale werden ebenfalls zu null)
-        for (int column = m.data[0].length - 1; column > 0; column--) {
-
-            // Alle Werte oberhalb von "column" werden zu null
-            for (int row = column; row > 0; row--) {
-                // Dazu wird Subtraktion angewandt
-                removeRowLeadingNumber(m.data[row - 1][column], column, row - 1, m.data, vector);
-            }
-        }
-
-        // Unser ehemaliger Loesungsvektor ist jetzt zu unserem Zielvektor
-        // geworden :)
-        return vector;
-    }
-
-    /**
-     * Dieser Code stammt von: <a href=
-     * "https://wiki.freitagsrunde.org/Javakurs/%C3%9Cbungsaufgaben/Gau%C3%9F-Algorithmus/Musterloesung">https://wiki.freitagsrunde.org</a>
-     *
-     * @param rowOne
-     * @param rowTwo
-     * @param matrix
-     * @param vector
-     * @since 1.1.0
-     */
-    private static void swapTwoLines(int rowOne, int rowTwo, double[][] matrix, Vector vector) {
-        double[] tmpLine;
-        double tmpVar;
-
-        tmpLine = matrix[rowOne];
-        tmpVar = vector.data[rowOne];
-
-        matrix[rowOne] = matrix[rowTwo];
-        vector.data[rowOne] = vector.data[rowTwo];
-
-        matrix[rowTwo] = tmpLine;
-        vector.data[rowTwo] = tmpVar;
-    }
-
-    /**
-     * Dieser Code stammt von: <a href=
-     * "https://wiki.freitagsrunde.org/Javakurs/%C3%9Cbungsaufgaben/Gau%C3%9F-Algorithmus/Musterloesung">https://wiki.freitagsrunde.org</a>
-     *
-     * @param row
-     * @param div
-     * @param matrix
-     * @param vector
-     * @since 1.1.0
-     */
-    private static void divideLine(int row, double div, double[][] matrix, Vector vector) {
-        for (int column = 0; column < matrix[row].length; column++) {
-            matrix[row][column] = matrix[row][column] / div;
-        }
-        vector.data[row] = vector.data[row] / div;
-    }
-
-    /**
-     * Dieser Code stammt von: <a href=
-     * "https://wiki.freitagsrunde.org/Javakurs/%C3%9Cbungsaufgaben/Gau%C3%9F-Algorithmus/Musterloesung">https://wiki.freitagsrunde.org</a>
-     *
-     * @param factor
-     * @param rowRoot
-     * @param row
-     * @param matrix
-     * @param vector
-     * @since 1.1.0
-     */
-    private static void removeRowLeadingNumber(double factor, int rowRoot, int row, double[][] matrix, Vector vector) {
-        for (int column = 0; column < matrix[row].length; column++) {
-            matrix[row][column] = matrix[row][column] - factor * matrix[rowRoot][column];
-        }
-        vector.data[row] = vector.data[row] - factor * vector.data[rowRoot];
-    }
-
     public static boolean equals(Matrix m1, Matrix m2) {
         if (m1.cols != m2.cols || m1.rows != m2.rows)
             return false;
@@ -371,7 +202,7 @@ public class Matrix implements Serializable {
     }
 
     /**
-     * comes from https://stackoverflow.com/a/49251497
+     * comes from <a href="https://stackoverflow.com/a/49251497">Stackoverflow</a>
      *
      * @param matrix
      * @param row
@@ -389,24 +220,35 @@ public class Matrix implements Serializable {
     }
 
     /**
-     * Creates a two-dimensional Array from the calling Matrix
+     * Transposes the Matrix.
      *
-     * @return
-     * @since 1.0.0
+     * @return this, after transposing
      */
-    public double[][] toArray() {
-        double[][] output = new double[this.rows][this.cols];
+    public Matrix transpose() {
+        Matrix m = new Matrix(this.cols, this.rows);
         for (int row = 0; row < this.rows; row++)
             for (int col = 0; col < this.cols; col++)
-                output[row][col] = this.data[row][col];
-        return output;
+                m.data[col][row] = this.data[row][col];
+        this.data = m.data;
+        this.rows = m.rows;
+        this.cols = m.cols;
+
+        return this;
+    }
+
+    /**
+     * Creates a two-dimensional array from the calling matrix.
+     *
+     * @return two-dimensional array from the matrix
+     */
+    public double[][] toArray() {
+        return Arrays.stream(data).map(double[]::clone).toArray(double[][]::new);
     }
 
     /**
      * Copies the Matrix to get an independent clone.
      *
      * @return independent copy of Matrix
-     * @since 1.0.0
      */
     public Matrix copy() {
         return new Matrix(this.data);
@@ -417,7 +259,6 @@ public class Matrix implements Serializable {
      *
      * @param d value to fill the Matrix with
      * @return this, after filling
-     * @since 1.0.0
      */
     public Matrix fill(double d) {
         for (int row = 0; row < this.rows; row++) {
@@ -449,9 +290,8 @@ public class Matrix implements Serializable {
      * </code>
      * </pre>
      *
-     * @param helper
-     * @return
-     * @since 1.0.0
+     * @param helper functional interface to perform the mapping
+     * @return this, after mapping
      */
     public Matrix map(IMathHelper<Double> helper) {
         for (int row = 0; row < this.rows; row++) {
@@ -468,7 +308,6 @@ public class Matrix implements Serializable {
      * @param min lower bound (inclusive)
      * @param max upper bound (exclusive)
      * @return this, after randomizing
-     * @since 1.0.0
      */
     public Matrix randomize(double min, double max) {
         for (int row = 0; row < this.rows; row++) {
@@ -482,8 +321,7 @@ public class Matrix implements Serializable {
     /**
      * Fills the Matrix randomly with numbers between 0 and 1
      *
-     * @return
-     * @since 1.0.0
+     * @return this, after randomizing
      */
     public Matrix randomize() {
         for (int row = 0; row < this.rows; row++) {
@@ -496,8 +334,6 @@ public class Matrix implements Serializable {
 
     /**
      * Prints the Matrix into the standard System.out PrintStream.
-     *
-     * @since 1.1.1
      */
     public void print() {
         print(System.out);
@@ -505,8 +341,6 @@ public class Matrix implements Serializable {
 
     /**
      * Prints the Matrix into the dedicated PrintStream.
-     *
-     * @since 1.0.0
      */
     public void print(PrintStream stream) {
         stream.println("-------------------------------------------------");
@@ -519,28 +353,14 @@ public class Matrix implements Serializable {
         stream.println("-------------------------------------------------");
     }
 
-    /**
-     * @return
-     * @since 1.0.0
-     */
-    public Matrix transpose() {
-        Matrix m = new Matrix(this.cols, this.rows);
-        for (int row = 0; row < this.rows; row++)
-            for (int col = 0; col < this.cols; col++)
-                m.data[col][row] = this.data[row][col];
-        this.data = m.data;
-        this.rows = m.rows;
-        this.cols = m.cols;
-
-        return this;
-    }
 
     /**
-     * @param m
-     * @return
-     * @since 1.0.0
+     * Multiplies the Matrix with another Matrix.
+     *
+     * @param m the Matrix to multiply with
+     * @return this, after multiplication
      */
-    public Matrix dot(Matrix m) {
+    public Matrix matmul(Matrix m) {
         if (this.cols != m.rows)
             throw new IllegalArgumentException("A's cols and B's rows must match!");
         double[][] newData = new double[this.rows][m.cols];
@@ -553,9 +373,10 @@ public class Matrix implements Serializable {
     }
 
     /**
-     * @param m
-     * @return
-     * @since 1.0.0
+     * Subtracts the Matrix m from the calling Matrix.
+     *
+     * @param m the Matrix to subtract
+     * @return this, after subtraction
      */
     public Matrix sub(Matrix m) {
         if (m.cols != this.cols || m.rows != this.rows)
@@ -568,9 +389,10 @@ public class Matrix implements Serializable {
     }
 
     /**
-     * @param m
-     * @return
-     * @since 1.0.0
+     * Adds the Matrix m to the calling Matrix.
+     *
+     * @param m the Matrix to add
+     * @return this, after addition
      */
     public Matrix add(Matrix m) {
         if (this.cols != m.cols || this.rows != m.rows)
@@ -583,9 +405,10 @@ public class Matrix implements Serializable {
     }
 
     /**
-     * @param scl
-     * @return
-     * @since 1.0.0
+     * Multiplies the Matrix with a scalar.
+     *
+     * @param scl the scalar to multiply with
+     * @return this, after multiplication
      */
     public Matrix mult(double scl) {
         for (int row = 0; row < this.rows; row++)
@@ -597,11 +420,10 @@ public class Matrix implements Serializable {
     /**
      * the hadamard product
      *
-     * @param m
+     * @param m the matrix to multiply with
      * @return this after multiplication with matrix m
-     * @since 1.2.0
      */
-    public Matrix mult(Matrix m) {
+    public Matrix hadamard(Matrix m) {
         if (this.cols != m.cols || this.rows != m.rows)
             throw new IllegalArgumentException("rows and columns must match!");
 
@@ -612,12 +434,14 @@ public class Matrix implements Serializable {
     }
 
     /**
-     * @param col
-     * @param data
-     * @return
-     * @since 1.0.1
+     * Setter for a whole column.
+     *
+     * @param col  column index
+     * @param data data to set
+     * @return this, after setting
+     * @throws IllegalArgumentException if the column does not exist or the data does not fit
      */
-    public Matrix setColumn(int col, double data[]) {
+    public Matrix setColumn(int col, double[] data) {
         if (this.cols <= col || col < 0)
             throw new IllegalArgumentException("This column does not exist!");
         if (this.data.length != data.length)
@@ -628,12 +452,14 @@ public class Matrix implements Serializable {
     }
 
     /**
-     * @param row
-     * @param data
-     * @return
-     * @since 1.0.1
+     * Setter for a whole row.
+     *
+     * @param row  row index
+     * @param data data to set
+     * @return this, after setting
+     * @throws IllegalArgumentException if the row does not exist or the data does not fit
      */
-    public Matrix setRow(int row, double data[]) {
+    public Matrix setRow(int row, double[] data) {
         if (this.rows <= row || row < 0)
             throw new IllegalArgumentException("This row does not exist!");
         if (this.data[row].length != data.length)
@@ -643,8 +469,9 @@ public class Matrix implements Serializable {
     }
 
     /**
-     * @return
-     * @since 1.0.1
+     * Calculates the determinant of the matrix.
+     *
+     * @return the determinant of the matrix
      */
     public double det() {
         if (data.length != data[0].length)
@@ -674,31 +501,51 @@ public class Matrix implements Serializable {
     }
 
     /**
-     * Setzt den Wert in der angegeben Zeile und Spalte auf den gegebenen Wert.
+     * Setter for a specific value.
      *
-     * @param row
-     * @param col
-     * @param val
-     * @return
-     * @since 1.0.1
+     * @param row row index
+     * @param col column index
+     * @param val value to set
+     * @return this, after setting
      */
     public Matrix set(int row, int col, double val) {
         data[row][col] = val;
         return this;
     }
 
+    /**
+     * Getter for a specific value.
+     *
+     * @param row row index
+     * @param col column index
+     * @return the value at the specified location
+     */
     public double get(int row, int col) {
         return this.data[row][col];
     }
 
-    public boolean equals(Matrix other) {
-        if (this.cols != other.cols || this.rows != other.rows)
-            return false;
-        for (int row = 0; row < this.rows; row++)
-            for (int col = 0; col < other.cols; col++)
-                if (this.data[row][col] != other.data[row][col])
-                    return false;
-        return true;
+    /**
+     * Getter for the whole data of the matrix as 2D array. This is a reference to
+     * the data, so changes to the data will affect the matrix.
+     *
+     * @return the data of the matrix
+     */
+    public double[][] getData() {
+        return this.data;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o instanceof Matrix other) {
+            if (this.cols != other.cols || this.rows != other.rows)
+                return false;
+            for (int row = 0; row < this.rows; row++)
+                for (int col = 0; col < other.cols; col++)
+                    if (this.data[row][col] != other.data[row][col])
+                        return false;
+            return true;
+        }
+        return super.equals(o);
     }
 
 }
