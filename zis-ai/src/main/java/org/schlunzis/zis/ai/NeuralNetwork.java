@@ -39,7 +39,7 @@ public class NeuralNetwork implements Serializable {
             return Math.tanh(x);
         }
     };
-    protected static final String err_Message = "An error has occurred. Please consider filing an issue at https://github.com/schlunzis/Ze-Impressive-Schwifty/issues to get help on this problem. Please consider to add the following error code for debugging purposes: ";
+    
     @Serial
     private static final long serialVersionUID = 1L;
     protected ActivationFunction actFunc = sigmoid;
@@ -372,8 +372,7 @@ public class NeuralNetwork implements Serializable {
      * @since 0.0.1
      */
     public NeuralNetwork copy() {
-        NeuralNetwork output = null;
-        output = new NeuralNetwork(this.learningrate, this.layers[0], this.layers[layers.length - 1],
+        NeuralNetwork output = new NeuralNetwork(this.learningrate, this.layers[0], this.layers[layers.length - 1],
                 Arrays.copyOfRange(layers, 1, layers.length - 1));
         for (int i = 0; i < weights.length; i++)
             output.weights[i] = weights[i].copy();
