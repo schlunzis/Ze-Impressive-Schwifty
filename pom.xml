@@ -18,6 +18,7 @@
     <modules>
         <module>zis-commons</module>
         <module>zis-math</module>
+        <module>zis-ai</module>
     </modules>
 
     <properties>
