@@ -26,7 +26,6 @@ public class GeneticNeuralNetwork extends NeuralNetwork {
      * @param learningrate The learning rate of the neural network.
      * @param mutationRate The mutation rate of the neural network.
      * @see NeuralNetwork#NeuralNetwork(double, int, int, int...)
-     * @since 0.0.1
      */
     public GeneticNeuralNetwork(double learningrate, double mutationRate, int inputnodes, int outputnodes,
                                 int... hiddennodes) {
@@ -38,7 +37,6 @@ public class GeneticNeuralNetwork extends NeuralNetwork {
      * Calls {@link #mutate(double)} with the mutation rate of the instance.
      *
      * @return mutated instance of calling object
-     * @since 0.0.1
      */
     public GeneticNeuralNetwork mutate() {
         return mutate(this.mutationRate);
@@ -51,7 +49,6 @@ public class GeneticNeuralNetwork extends NeuralNetwork {
      *
      * @param mutationRate The rate of mutation. The higher the rate, the more weights are mutated.
      * @return this, after mutation
-     * @since 0.0.1
      */
     public GeneticNeuralNetwork mutate(double mutationRate) {
 
@@ -92,7 +89,6 @@ public class GeneticNeuralNetwork extends NeuralNetwork {
      * Creates a deep copy of the neural network.
      *
      * @return A deep copy of the neural network.
-     * @since 0.0.1
      */
     @Override
     public GeneticNeuralNetwork copy() {

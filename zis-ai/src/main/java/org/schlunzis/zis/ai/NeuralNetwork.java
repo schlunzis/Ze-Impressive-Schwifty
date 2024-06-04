@@ -39,7 +39,7 @@ public class NeuralNetwork implements Serializable {
             return Math.tanh(x);
         }
     };
-    
+
     @Serial
     private static final long serialVersionUID = 1L;
     protected ActivationFunction actFunc = sigmoid;
@@ -79,7 +79,6 @@ public class NeuralNetwork implements Serializable {
      * @param inputnodes   number of nodes in the input layer
      * @param outputnodes  number of nodes in the output layer
      * @param hiddennodes  number of nodes in the hidden layers. Each number represents the number of hidden nodes in the n-th layer.
-     * @since 0.0.1
      */
     public NeuralNetwork(double learningrate, int inputnodes, int outputnodes, int... hiddennodes) {
         this.learningrate = learningrate;
@@ -124,7 +123,6 @@ public class NeuralNetwork implements Serializable {
      * @param nn the neural network object to serialize
      * @throws IOException if an error occurs while writing the file
      * @see #deserialize(File)
-     * @since 0.0.1
      */
     public static void serialize(NeuralNetwork nn) throws IOException {
         String absolutePath = new File(".").getAbsolutePath();
@@ -144,7 +142,6 @@ public class NeuralNetwork implements Serializable {
      * @throws IOException            if an error occurs while reading the file
      * @throws ClassNotFoundException if the class of the object in the file cannot be found
      * @see #serialize(NeuralNetwork)
-     * @since 0.0.1
      */
     public static NeuralNetwork deserialize(File f) throws IOException, ClassNotFoundException {
         FileInputStream fis = new FileInputStream(f);
@@ -160,7 +157,6 @@ public class NeuralNetwork implements Serializable {
      *
      * @param inputs_list the inputs into the neural network
      * @return the networks guess
-     * @since 0.0.1
      */
     public Matrix query(Matrix inputs_list) {
 
@@ -179,7 +175,6 @@ public class NeuralNetwork implements Serializable {
      * @param inputs_list the inputs into the neural network
      * @return the networks guess
      * @see #query(Matrix)
-     * @since 0.0.1
      */
     public Matrix query(double[][] inputs_list) {
         return this.query(new Matrix(inputs_list));
@@ -191,7 +186,6 @@ public class NeuralNetwork implements Serializable {
      *
      * @param inputs_list  inputs in the neural network
      * @param targets_list targets of the neural network
-     * @since 0.0.1
      */
     public void train(Matrix inputs_list, Matrix targets_list) {
 
@@ -243,7 +237,6 @@ public class NeuralNetwork implements Serializable {
      * @param inputs_list  inputs in the neural network
      * @param targets_list targets of the neural network
      * @see #train(Matrix, Matrix)
-     * @since 0.0.1
      */
     public void train(double[][] inputs_list, double[][] targets_list) {
         this.train(new Matrix(inputs_list), new Matrix(targets_list));
@@ -257,7 +250,6 @@ public class NeuralNetwork implements Serializable {
      * @param width      the width of the image
      * @param height     the height of the image
      * @return a BufferedImage representing the neural network
-     * @since 0.0.1
      */
     public BufferedImage getSchemeImage(Color background, int width, int height) {
         int maxNodes = 25;
@@ -317,7 +309,6 @@ public class NeuralNetwork implements Serializable {
      * Create s a scheme image of the neural network with the default size 640x480 and transparent background.
      *
      * @return a default scheme image
-     * @since 0.0.1
      */
     public BufferedImage getSchemeImage() {
         return getSchemeImage(null, 640, 480);
@@ -329,7 +320,6 @@ public class NeuralNetwork implements Serializable {
      * @param width  width of the image
      * @param height height of the image
      * @return a BufferedImage with the specified parameters
-     * @since 0.0.1
      */
     public BufferedImage getSchemeImage(int width, int height) {
         return getSchemeImage(null, width, height);
@@ -339,7 +329,6 @@ public class NeuralNetwork implements Serializable {
      * Setter for the activation function of the neural network
      *
      * @param actFunc new activation function
-     * @since 0.0.1
      */
     public void setActivationFunction(ActivationFunction actFunc) {
         this.actFunc = actFunc;
@@ -349,7 +338,6 @@ public class NeuralNetwork implements Serializable {
      * Returns the current learning rate of the neural network
      *
      * @return current learning rate
-     * @since 0.0.1
      */
     public double getLearningrate() {
         return this.learningrate;
@@ -359,7 +347,6 @@ public class NeuralNetwork implements Serializable {
      * Sets the learning rate to the given value
      *
      * @param learningrate new learning rate
-     * @since 0.0.1
      */
     public void setLearningrate(double learningrate) {
         this.learningrate = learningrate;
@@ -369,7 +356,6 @@ public class NeuralNetwork implements Serializable {
      * Creates a copy of the neural network. Changes of to each object will not affect the other neural network.
      *
      * @return independent copy of the neural network
-     * @since 0.0.1
      */
     public NeuralNetwork copy() {
         NeuralNetwork output = new NeuralNetwork(this.learningrate, this.layers[0], this.layers[layers.length - 1],
