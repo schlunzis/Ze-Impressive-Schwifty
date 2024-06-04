@@ -69,6 +69,7 @@ class MatrixTest {
         assertTrue(Matrix.equals(target, m));
         assertTrue(Matrix.equals(new Matrix(new double[][]{{0, 0}, {0, 0}}), result));
 
+        assertThrows(IllegalArgumentException.class, () -> Matrix.matmul(new Matrix(2, 2), new Matrix(3, 3)));
     }
 
     @Test
@@ -83,19 +84,6 @@ class MatrixTest {
         Matrix m = new Matrix(2, 2);
         m.map((d, r, c) -> d + 2.0);
         assertTrue(m.equals(new Matrix(new double[][]{{2, 2}, {2, 2}})));
-    }
-
-    @Test
-    void testTranspose() {
-        Matrix m = new Matrix(new double[][]{{1, 2}, {3, 4}, {5, 6}});
-
-        Matrix target = new Matrix(new double[][]{{1, 3, 5}, {2, 4, 6}});
-
-        Matrix transposed = Matrix.transpose(m);
-        m.transpose();
-        assertTrue(Matrix.equals(transposed, m));
-        assertTrue(Matrix.equals(target, m));
-
     }
 
     @Test
@@ -130,6 +118,13 @@ class MatrixTest {
         result = Matrix.sub(a, b);
         assertTrue(Matrix.equals(result, new Matrix(new double[][]{{1, 0}, {-1, -2}})));
 
+        assertThrows(IllegalArgumentException.class, () -> Matrix.add(new Matrix(2, 2), new Matrix(3, 3)));
+
+
+        a = new Matrix(new double[][]{{1, 2}, {3, 4}});
+        result = Matrix.sub(1, a);
+        Matrix target = new Matrix(new double[][]{{0, -1}, {-2, -3}});
+        assertTrue(Matrix.equals(result, target));
     }
 
     @Test
@@ -143,5 +138,67 @@ class MatrixTest {
             assertArrayEquals(vals[i], data[i]);
         }
     }
+
+    @Test
+    public void testInverse() {
+        Matrix m = new Matrix(new double[][]{{1, 2}, {3, 4}});
+        Matrix inv = Matrix.inverse(m);
+        assertTrue(Matrix.equals(new Matrix(new double[][]{{-2, 1}, {1.5, -0.5}}), inv));
+        assertTrue(Matrix.equals(new Matrix(new double[][]{{1, 2}, {3, 4}}), m));
+
+        m = new Matrix(new double[][]{{2, -1, 0}, {1, 2, -2}, {0, -1, 1}});
+        inv = Matrix.inverse(m);
+        Matrix target = new Matrix(new double[][]{{0, 1, 2}, {-1, 2, 4}, {-1, 2, 5}});
+        assertTrue(Matrix.equals(target, inv));
+        assertTrue(Matrix.equals(new Matrix(new double[][]{{2, -1, 0}, {1, 2, -2}, {0, -1, 1}}), m));
+
+        m = new Matrix(new double[][]{{2, -1, 0}, {1, 2, -2}, {0, -1, 1}});
+        inv = m.inverse();
+        assertTrue(Matrix.equals(target, inv));
+        assertTrue(Matrix.equals(target, m));
+
+        assertThrows(IllegalArgumentException.class, () -> new Matrix(2, 2).map((d, r, c) -> d + 1).inverse());
+    }
+
+
+    @Test
+    public void testTranspose() {
+        Matrix m = new Matrix(new double[][]{{1, 2}, {3, 4}, {5, 6}});
+        Matrix target = new Matrix(new double[][]{{1, 3, 5}, {2, 4, 6}});
+        Matrix transposed = Matrix.transpose(m);
+        assertTrue(Matrix.equals(target, transposed));
+        assertTrue(Matrix.equals(m, new Matrix(new double[][]{{1, 2}, {3, 4}, {5, 6}})));
+
+        transposed = m.transpose();
+        assertTrue(Matrix.equals(target, transposed));
+        assertTrue(Matrix.equals(target, m));
+    }
+
+    @Test
+    public void testGetData() {
+        Matrix m = new Matrix(new double[][]{{1, 2}, {3, 4}});
+        double[][] data = m.getData();
+        assertArrayEquals(new double[]{1, 2}, data[0]);
+        assertArrayEquals(new double[]{3, 4}, data[1]);
+    }
+
+    @Test
+    public void testSet() {
+        Matrix m = new Matrix(new double[][]{{1, 2}, {3, 4}});
+        m.set(0, 0, 5);
+        assertEquals(5, m.get(0, 0));
+        m.set(1, 1, 6);
+        assertEquals(6, m.get(1, 1));
+    }
+
+    @Test
+    public void testSetColumn() {
+        Matrix m = new Matrix(new double[][]{{1, 2}, {3, 4}});
+        m.setColumn(0, new double[]{5, 6});
+        assertTrue(Matrix.equals(new Matrix(new double[][]{{5, 2}, {6, 4}}), m));
+        m.setColumn(1, new double[]{7, 8});
+        assertTrue(Matrix.equals(new Matrix(new double[][]{{5, 7}, {6, 8}}), m));
+    }
+
 
 }

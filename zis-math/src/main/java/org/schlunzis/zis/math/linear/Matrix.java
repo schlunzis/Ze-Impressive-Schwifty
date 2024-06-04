@@ -174,22 +174,28 @@ public class Matrix implements Serializable {
         return true;
     }
 
+
     /**
      * comes from https://stackoverflow.com/a/49251497
      *
      * @param matrix
      * @return
      */
-    public static double[][] inverse(double[][] matrix) {
-        double[][] inverse = new double[matrix.length][matrix.length];
+    public static Matrix inverse(Matrix matrix) {
+
+        if (matrix.det() == 0)
+            throw new IllegalArgumentException("The determinant of the matrix is 0!");
+
+        double[][] matrixData = matrix.toArray();
+        double[][] inverse = new double[matrixData.length][matrixData[0].length];
 
         // minors and cofactors
-        for (int i = 0; i < matrix.length; i++)
-            for (int j = 0; j < matrix[i].length; j++)
-                inverse[i][j] = Math.pow(-1, i + j) * new Matrix(minor(matrix, i, j)).det();
+        for (int i = 0; i < matrixData.length; i++)
+            for (int j = 0; j < matrixData[i].length; j++)
+                inverse[i][j] = Math.pow(-1, i + j) * new Matrix(minor(matrixData, i, j)).det();
 
         // adjugate and determinant
-        double det = 1.0 / new Matrix(matrix).det();
+        double det = 1.0 / new Matrix(matrixData).det();
         for (int i = 0; i < inverse.length; i++) {
             for (int j = 0; j <= i; j++) {
                 double temp = inverse[i][j];
@@ -198,7 +204,7 @@ public class Matrix implements Serializable {
             }
         }
 
-        return inverse;
+        return new Matrix(inverse);
     }
 
     /**
@@ -219,27 +225,33 @@ public class Matrix implements Serializable {
         return minor;
     }
 
+
+    public Matrix inverse() {
+        Matrix inverse = inverse(this);
+        this.data = inverse.data;
+        this.cols = inverse.cols;
+        this.rows = inverse.rows;
+        return this;
+    }
+
     /**
      * Transposes the Matrix.
      *
      * @return this, after transposing
      */
     public Matrix transpose() {
-        Matrix m = new Matrix(this.cols, this.rows);
-        for (int row = 0; row < this.rows; row++)
-            for (int col = 0; col < this.cols; col++)
-                m.data[col][row] = this.data[row][col];
+        Matrix m = transpose(this);
         this.data = m.data;
         this.rows = m.rows;
         this.cols = m.cols;
-
         return this;
     }
 
     /**
-     * Creates a two-dimensional array from the calling matrix.
+     * Creates a two-dimensional array from the calling matrix. This copy of the data is independent of the original matrix.
      *
      * @return two-dimensional array from the matrix
+     * @see #getData()
      */
     public double[][] toArray() {
         return Arrays.stream(data).map(double[]::clone).toArray(double[][]::new);
@@ -529,6 +541,7 @@ public class Matrix implements Serializable {
      * the data, so changes to the data will affect the matrix.
      *
      * @return the data of the matrix
+     * @see #toArray()
      */
     public double[][] getData() {
         return this.data;
