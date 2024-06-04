@@ -2,48 +2,60 @@ package org.schlunzis.zis.commons.collections;
 
 import java.util.*;
 
+/**
+ * This is an implementation of the {@link List2D} interface. It uses {@link ArrayList}s to store the elements. This
+ * implementation is not thread safe.
+ *
+ * @param <E>
+ * @author Til7701
+ * @since 0.0.1
+ */
 public class ArrayList2D<E> extends AbstractList2D<E> implements RandomAccess {
 
     private static final int DEFAULT_CAPACITY = 10;
 
     private final List<List<E>> elementData;
 
+    /**
+     * Creates an empty list with a capacity of 10.
+     */
     public ArrayList2D() {
         this(DEFAULT_CAPACITY);
     }
 
-    public ArrayList2D(int initialNumRows) {
-        this(initialNumRows, DEFAULT_CAPACITY);
+    /**
+     * Creates an empty list with the given capacity.
+     *
+     * @param initialRowsCapacity the capacity for row
+     * @throws IllegalArgumentException if the given capacity is negative
+     */
+    public ArrayList2D(int initialRowsCapacity) {
+        this.elementData = new ArrayList<>(initialRowsCapacity);
     }
 
-    public ArrayList2D(int initialNumRows, int initialNumCols) {
-        if (initialNumRows < 0)
-            throw new IllegalArgumentException("Illegal number of rows. Must be positive or zero: " + initialNumRows);
-        if (initialNumCols < 0)
-            throw new IllegalArgumentException("Illegal number of columns. Must be positive or zero: " + initialNumCols);
-        this.elementData = new ArrayList<>(initialNumRows);
-    }
-
+    /**
+     * Creates a new list with the elements of the given list. Changes to this list do not affect the other list and
+     * vice versa.
+     *
+     * @param other the list to take the other elements from
+     * @throws NullPointerException if the other list is null
+     */
     public ArrayList2D(List2D<E> other) {
         Objects.requireNonNull(other, "Other list must not be null.");
         this.elementData = new ArrayList<>();
-        for (int i = 0; i < other.size(); i++) {
-            List<E> row = new ArrayList<>(other.size(i));
-            for (int j = 0; j < other.size(i); j++) {
-                row.add(other.get(i, j));
-            }
-            elementData.add(row);
+        for (Iterator<List<E>> it = other.rowIterator(); it.hasNext(); ) {
+            List<E> otherRow = it.next();
+            List<E> newRow = new ArrayList<>(otherRow.size());
+            newRow.addAll(otherRow);
+            elementData.add(newRow);
         }
     }
 
-    public ArrayList2D(ArrayList2D<E> other) {
-        Objects.requireNonNull(other, "Other list must not be null.");
-        this.elementData = new ArrayList<>(other.elementData.size());
-        for (int i = 0; i < other.elementData.size(); i++) {
-            this.elementData.add(new ArrayList<>(other.elementData.get(i)));
-        }
-    }
-
+    /**
+     * Creates a new list with the given elements. References to the array are lost.
+     *
+     * @param array the array to take the elements from
+     */
     public ArrayList2D(E[][] array) {
         Objects.requireNonNull(array, "Array must not be null.");
         this.elementData = new ArrayList<>(array.length);
@@ -61,7 +73,12 @@ public class ArrayList2D<E> extends AbstractList2D<E> implements RandomAccess {
 
     @Override
     public Iterator<List<E>> rowIterator() {
-        return elementData.iterator();
+        return new RowIterator();
+    }
+
+    @Override
+    public Iterator<List<E>> columnIterator() {
+        return new ColumnIterator();
     }
 
     @Override
@@ -98,6 +115,11 @@ public class ArrayList2D<E> extends AbstractList2D<E> implements RandomAccess {
     }
 
     @Override
+    public void addRow() {
+        elementData.add(new ArrayList<>());
+    }
+
+    @Override
     public void addRow(List<E> newRow) {
         Objects.requireNonNull(newRow, "New row must not be null.");
         elementData.add(newRow);
@@ -114,12 +136,6 @@ public class ArrayList2D<E> extends AbstractList2D<E> implements RandomAccess {
     }
 
     @Override
-    public E[] shortestArray(E[] array) {
-        Objects.requireNonNull(array, "Array must not be null.");
-        return shortestRow().toArray(array);
-    }
-
-    @Override
     public List<E> shortestRow() {
         if (elementData.isEmpty()) return new ArrayList<>();
         List<E> shortestList = elementData.getFirst();
@@ -128,11 +144,6 @@ public class ArrayList2D<E> extends AbstractList2D<E> implements RandomAccess {
                 shortestList = elementData.get(i);
         }
         return shortestList;
-    }
-
-    @Override
-    public E[] longestArray(E[] array) {
-        return longestRow().toArray(array);
     }
 
     @Override
@@ -166,13 +177,8 @@ public class ArrayList2D<E> extends AbstractList2D<E> implements RandomAccess {
     }
 
     private class ElementIterator implements Iterator<E> {
-        private int row;
-        private int column;
-
-        public ElementIterator() {
-            this.row = 0;
-            this.column = 0;
-        }
+        private int row = 0;
+        private int column = 0;
 
         @Override
         public boolean hasNext() {
@@ -191,6 +197,80 @@ public class ArrayList2D<E> extends AbstractList2D<E> implements RandomAccess {
                 column = 0;
             }
             return result;
+        }
+    }
+
+    private class RowIterator implements Iterator<List<E>> {
+        private int row = 0;
+
+        @Override
+        public boolean hasNext() {
+            return row < elementData.size();
+        }
+
+        @Override
+        public List<E> next() {
+            if (!hasNext()) {
+                throw new NoSuchElementException();
+            }
+            List<E> result = elementData.get(row);
+            row++;
+            return result;
+        }
+    }
+
+    private class ColumnIterator implements Iterator<List<E>> {
+        private final ColumnView columnView;
+
+        public ColumnIterator() {
+            columnView = new ColumnView(-1);
+        }
+
+        @Override
+        public boolean hasNext() {
+            return columnView.getColumnIndex() < longestRow().size();
+        }
+
+        @Override
+        public List<E> next() {
+            if (!hasNext()) {
+                throw new NoSuchElementException();
+            }
+            columnView.columnIndex = columnView.columnIndex + 1;
+            return columnView;
+        }
+    }
+
+    private class ColumnView extends AbstractList<E> implements List2DColumnView<E> {
+        private int columnIndex;
+
+        private ColumnView(int columnIndex) {
+            this.columnIndex = columnIndex;
+        }
+
+        @Override
+        public E get(int rowIndex) {
+            return elementData.get(rowIndex).get(columnIndex);
+        }
+
+        @Override
+        public int size() {
+            return elementData.size();
+        }
+
+        @Override
+        public int getColumnIndex() {
+            return columnIndex;
+        }
+
+        @Override
+        public final boolean equals(Object o) {
+            return super.equals(o);
+        }
+
+        @Override
+        public int hashCode() {
+            return super.hashCode();
         }
     }
 

@@ -4,6 +4,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.Iterator;
+import java.util.List;
+import java.util.NoSuchElementException;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -23,13 +25,89 @@ class ArrayList2DTest {
     }
 
     //##################################################
+    // ArrayList2D()
+    //##################################################
+
+    @Test
+    void constructorTest() {
+        ArrayList2D<Object> list = new ArrayList2D<>();
+        assertEquals(0, list.size());
+        assertTrue(list.isEmpty());
+    }
+
+    //##################################################
+    // ArrayList2D(int)
+    //##################################################
+
+    @Test
+    void constructorCapacityTest() {
+        assertThrows(IllegalArgumentException.class, () -> new ArrayList2D<>(-1));
+        ArrayList2D<Object> list = new ArrayList2D<>(5);
+        assertEquals(0, list.size());
+        assertTrue(list.isEmpty());
+    }
+
+    //##################################################
+    // TwoDListOfLists(TowDListOfLists)
+    //##################################################
+
+    @Test
+    void constructorNullTest() {
+        assertThrows(NullPointerException.class, () -> new ArrayList2D<>((ArrayList2D<Object>) null));
+    }
+
+    @Test
+    void constructorOtherTest() {
+        ArrayList2D<Object> list = new ArrayList2D<>(defaultList);
+        assertEquals(6, list.size());
+        assertEquals(2, list.size(0));
+        assertEquals(3, list.size(1));
+        assertEquals(1, list.size(2));
+        assertEquals(defaultList.get(0, 0), list.get(0, 0));
+        assertEquals(defaultList.get(0, 1), list.get(0, 1));
+        assertEquals(defaultList.get(1, 0), list.get(1, 0));
+        assertEquals(defaultList.get(1, 1), list.get(1, 1));
+        assertEquals(defaultList.get(1, 2), list.get(1, 2));
+        assertEquals(defaultList.get(2, 0), list.get(2, 0));
+        assertFalse(list.isEmpty());
+    }
+
+    //##################################################
+    // TwoDListOfLists(E[][])
+    //##################################################
+
+    @Test
+    void constructorArrayNullTest() {
+        assertThrows(NullPointerException.class, () -> new ArrayList2D<>((Object[][]) null));
+    }
+
+    @Test
+    void constructorArrayOtherTest() {
+        ArrayList2D<Object> list = defaultList;
+        assertEquals(6, list.size());
+        assertEquals(2, list.size(0));
+        assertEquals(3, list.size(1));
+        assertEquals(1, list.size(2));
+        assertEquals(defaultArray[0][0], list.get(0, 0));
+        assertEquals(defaultArray[0][1], list.get(0, 1));
+        assertEquals(defaultArray[1][0], list.get(1, 0));
+        assertEquals(defaultArray[1][1], list.get(1, 1));
+        assertEquals(defaultArray[1][2], list.get(1, 2));
+        assertEquals(defaultArray[2][0], list.get(2, 0));
+        assertFalse(list.isEmpty());
+    }
+
+
+    //##################################################
     // iterator()
     //##################################################
 
     @Test
     void iteratorEmptyTest() {
-        ArrayList2D<Object> list = new ArrayList2D<>();
-        assertFalse(list.iterator().hasNext());
+        Iterator<Object> it = new ArrayList2D<>().iterator();
+        assertNotNull(it);
+        assertFalse(it.hasNext());
+        assertThrows(NoSuchElementException.class, it::next);
     }
 
     @Test
@@ -80,96 +158,12 @@ class ArrayList2DTest {
     }
 
     //##################################################
-    // TwoDListOfLists()
-    //##################################################
-
-    @Test
-    void constructorTest() {
-        ArrayList2D<Object> list = new ArrayList2D<>();
-        assertEquals(0, list.size());
-        assertFalse(list.iterator().hasNext());
-        assertFalse(list.rowIterator().hasNext());
-        assertTrue(list.isEmpty());
-    }
-
-    //##################################################
-    // TwoDListOfLists(int, int)
-    //##################################################
-
-    @Test
-    void constructorCapacityTest() {
-        assertThrows(IllegalArgumentException.class, () -> new ArrayList2D<>(-1));
-        assertThrows(IllegalArgumentException.class, () -> new ArrayList2D<>(0, -1));
-        ArrayList2D<Object> list = new ArrayList2D<>(5, 3);
-        assertEquals(0, list.size());
-        assertFalse(list.iterator().hasNext());
-        assertFalse(list.rowIterator().hasNext());
-        assertTrue(list.isEmpty());
-    }
-
-    //##################################################
-    // TwoDListOfLists(TowDListOfLists)
-    //##################################################
-
-    @Test
-    void constructorNullTest() {
-        assertThrows(NullPointerException.class, () -> new ArrayList2D<>((ArrayList2D<Object>) null));
-    }
-
-    @Test
-    void constructorOtherTest() {
-        ArrayList2D<Object> other = new ArrayList2D<>(5, 3);
-        other.add(0, new Object());
-        other.add(0, new Object());
-        other.add(1, new Object());
-        other.add(1, new Object());
-        other.add(1, new Object());
-        other.add(2, new Object());
-        ArrayList2D<Object> list = new ArrayList2D<>(other);
-        assertEquals(6, list.size());
-        assertEquals(2, list.size(0));
-        assertEquals(3, list.size(1));
-        assertEquals(1, list.size(2));
-        assertEquals(other.get(0, 0), list.get(0, 0));
-        assertEquals(other.get(0, 1), list.get(0, 1));
-        assertEquals(other.get(1, 0), list.get(1, 0));
-        assertEquals(other.get(1, 1), list.get(1, 1));
-        assertEquals(other.get(1, 2), list.get(1, 2));
-        assertEquals(other.get(2, 0), list.get(2, 0));
-        assertFalse(list.isEmpty());
-    }
-
-    //##################################################
-    // TwoDListOfLists(E[][])
-    //##################################################
-
-    @Test
-    void constructorArrayNullTest() {
-        assertThrows(NullPointerException.class, () -> new ArrayList2D<>((Object[][]) null));
-    }
-
-    @Test
-    void constructorArrayOtherTest() {
-        ArrayList2D<Object> list = defaultList;
-        assertEquals(6, list.size());
-        assertEquals(2, list.size(0));
-        assertEquals(3, list.size(1));
-        assertEquals(1, list.size(2));
-        assertEquals(defaultArray[0][0], list.get(0, 0));
-        assertEquals(defaultArray[0][1], list.get(0, 1));
-        assertEquals(defaultArray[1][0], list.get(1, 0));
-        assertEquals(defaultArray[1][1], list.get(1, 1));
-        assertEquals(defaultArray[1][2], list.get(1, 2));
-        assertEquals(defaultArray[2][0], list.get(2, 0));
-        assertFalse(list.isEmpty());
-    }
-
-    //##################################################
     // size()
     //##################################################
 
     @Test
     void sizeTest() {
+        assertEquals(6, defaultList.size());
         ArrayList2D<Object> list = new ArrayList2D<>();
         assertEquals(0, list.size());
         list.add(0, new Object());
@@ -187,11 +181,32 @@ class ArrayList2DTest {
     }
 
     //##################################################
+    // get(int)
+    //##################################################
+
+    @Test
+    void get1OutOfBoundsTest() {
+        assertThrows(IndexOutOfBoundsException.class, () -> defaultList.get(-1));
+        assertThrows(IndexOutOfBoundsException.class, () -> defaultList.get(-42));
+        assertThrows(IndexOutOfBoundsException.class, () -> defaultList.get(3));
+        assertThrows(IndexOutOfBoundsException.class, () -> defaultList.get(42));
+    }
+
+    @Test
+    void get1Test() {
+        List<Object> row = defaultList.get(0);
+        assertEquals(defaultArray[0][0], row.getFirst());
+        assertEquals(defaultArray[0][1], row.get(1));
+        assertThrows(IndexOutOfBoundsException.class, () -> row.get(-1));
+        assertThrows(IndexOutOfBoundsException.class, () -> row.get(2));
+    }
+
+    //##################################################
     // get(int, int)
     //##################################################
 
     @Test
-    void getTest() {
+    void get2Test() {
         ArrayList2D<Object> list = new ArrayList2D<>();
         Object o1 = new Object();
         Object o2 = new Object();
@@ -290,22 +305,6 @@ class ArrayList2DTest {
     }
 
     //##################################################
-    // shortestArray(E[])
-    //##################################################
-
-    @Test
-    void shortestArrayEmptyTest() {
-        ArrayList2D<Object> list = new ArrayList2D<>();
-        assertArrayEquals(new Object[0], list.shortestArray(new Object[0]));
-    }
-
-    @Test
-    void shortestArrayTest() {
-        ArrayList2D<Object> list = defaultList;
-        assertArrayEquals(defaultArray[2], list.shortestArray(new Object[0]));
-    }
-
-    //##################################################
     // shortestList()
     //##################################################
 
@@ -320,22 +319,6 @@ class ArrayList2DTest {
         ArrayList2D<Object> list = defaultList;
         assertEquals(1, list.shortestRow().size());
         assertEquals(defaultArray[2][0], list.shortestRow().getFirst());
-    }
-
-    //##################################################
-    // longestArray(E[])
-    //##################################################
-
-    @Test
-    void longestArrayEmptyTest() {
-        ArrayList2D<Object> list = new ArrayList2D<>();
-        assertArrayEquals(new Object[0], list.longestArray(new Object[0]));
-    }
-
-    @Test
-    void longestArrayTest() {
-        ArrayList2D<Object> list = defaultList;
-        assertArrayEquals(defaultArray[1], list.longestArray(new Object[0]));
     }
 
     //##################################################
