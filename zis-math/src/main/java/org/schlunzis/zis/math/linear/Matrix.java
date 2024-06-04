@@ -17,7 +17,6 @@ public class Matrix implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
     private double[][] data;
-    private int rows, cols;
 
     /**
      * Creates a Matrix with specified number of rows and columns, initialized with
@@ -27,9 +26,7 @@ public class Matrix implements Serializable {
      * @param cols Number of columns of the new Matrix
      */
     public Matrix(int rows, int cols) {
-        this.rows = rows;
-        this.cols = cols;
-        this.data = new double[this.rows][this.cols];
+        this.data = new double[rows][cols];
     }
 
     /**
@@ -38,8 +35,6 @@ public class Matrix implements Serializable {
      * @param data two-dimensional Array to create the Matrix from
      */
     public Matrix(double[][] data) {
-        this.rows = data.length;
-        this.cols = data[0].length;
         this.data = Arrays.stream(data).map(double[]::clone).toArray(double[][]::new);
     }
 
@@ -48,9 +43,9 @@ public class Matrix implements Serializable {
      * @return the transposed matrix
      */
     public static Matrix transpose(Matrix matrix) {
-        Matrix newMatrix = new Matrix(matrix.cols, matrix.rows);
-        for (int row = 0; row < matrix.rows; row++)
-            for (int col = 0; col < matrix.cols; col++)
+        Matrix newMatrix = new Matrix(matrix.getColumns(), matrix.getRows());
+        for (int row = 0; row < matrix.getRows(); row++)
+            for (int col = 0; col < matrix.getColumns(); col++)
                 newMatrix.data[col][row] = matrix.data[row][col];
         return newMatrix;
     }
@@ -63,13 +58,13 @@ public class Matrix implements Serializable {
      * @return the product of both matrices
      */
     public static Matrix matmul(Matrix a, Matrix b) {
-        if (a.cols != b.rows)
+        if (a.getColumns() != b.getRows())
             throw new IllegalArgumentException("A's cols and B's rows must match!");
 
-        double[][] newData = new double[a.rows][b.cols];
-        for (int row = 0; row < a.rows; row++)
-            for (int col = 0; col < b.cols; col++)
-                for (int j = 0; j < a.cols; j++)
+        double[][] newData = new double[a.getRows()][b.getColumns()];
+        for (int row = 0; row < a.getRows(); row++)
+            for (int col = 0; col < b.getColumns(); col++)
+                for (int j = 0; j < a.getColumns(); j++)
                     newData[row][col] += a.data[row][j] * b.data[j][col];
 
         return new Matrix(newData);
@@ -83,11 +78,11 @@ public class Matrix implements Serializable {
      * @return the difference of both matrices
      */
     public static Matrix sub(Matrix a, Matrix b) {
-        if (a.cols != b.cols || a.rows != b.rows)
+        if (a.getColumns() != b.getColumns() || a.getRows() != b.getRows())
             throw new IllegalArgumentException("rows and columns must match!");
-        Matrix newMatrix = new Matrix(a.rows, a.cols);
-        for (int row = 0; row < a.rows; row++)
-            for (int col = 0; col < a.cols; col++)
+        Matrix newMatrix = new Matrix(a.getRows(), a.getColumns());
+        for (int row = 0; row < a.getRows(); row++)
+            for (int col = 0; col < a.getColumns(); col++)
                 newMatrix.data[row][col] = a.data[row][col] - b.data[row][col];
         return newMatrix;
     }
@@ -100,9 +95,9 @@ public class Matrix implements Serializable {
      * @return the difference of the matrix and the value
      */
     public static Matrix sub(double d, Matrix m) {
-        Matrix newMatrix = new Matrix(m.rows, m.cols);
-        for (int row = 0; row < newMatrix.rows; row++)
-            for (int col = 0; col < newMatrix.cols; col++)
+        Matrix newMatrix = new Matrix(m.getRows(), m.getColumns());
+        for (int row = 0; row < newMatrix.getRows(); row++)
+            for (int col = 0; col < newMatrix.getColumns(); col++)
                 newMatrix.data[row][col] = d - m.data[row][col];
         return newMatrix;
     }
@@ -115,12 +110,12 @@ public class Matrix implements Serializable {
      * @return the sum of both matrices
      */
     public static Matrix add(Matrix a, Matrix b) {
-        if (a.cols != b.cols || a.rows != b.rows)
+        if (a.getColumns() != b.getColumns() || a.getRows() != b.getRows())
             throw new IllegalArgumentException("rows and columns must match!");
 
-        Matrix newMatrix = new Matrix(a.rows, a.cols);
-        for (int row = 0; row < a.rows; row++)
-            for (int col = 0; col < a.cols; col++)
+        Matrix newMatrix = new Matrix(a.getRows(), a.getColumns());
+        for (int row = 0; row < a.getRows(); row++)
+            for (int col = 0; col < a.getColumns(); col++)
                 newMatrix.data[row][col] = a.data[row][col] + b.data[row][col];
         return newMatrix;
     }
@@ -133,9 +128,9 @@ public class Matrix implements Serializable {
      * @return the scaled matrix
      */
     public static Matrix mult(Matrix m, double scl) {
-        Matrix newMatrix = new Matrix(m.rows, m.cols);
-        for (int row = 0; row < newMatrix.rows; row++)
-            for (int col = 0; col < newMatrix.cols; col++)
+        Matrix newMatrix = new Matrix(m.getRows(), m.getColumns());
+        for (int row = 0; row < newMatrix.getRows(); row++)
+            for (int col = 0; col < newMatrix.getColumns(); col++)
                 newMatrix.data[row][col] = scl * m.data[row][col];
         return newMatrix;
     }
@@ -148,11 +143,11 @@ public class Matrix implements Serializable {
      * @return the hadamard product of both matrices
      */
     public static Matrix hadamard(Matrix a, Matrix b) {
-        if (a.cols != b.cols || a.rows != b.rows)
+        if (a.getColumns() != b.getColumns() || a.getRows() != b.getRows())
             throw new IllegalArgumentException("rows and columns must match!");
-        Matrix newMatrix = new Matrix(a.rows, b.cols);
-        for (int row = 0; row < newMatrix.rows; row++)
-            for (int col = 0; col < newMatrix.cols; col++)
+        Matrix newMatrix = new Matrix(a.getRows(), b.getColumns());
+        for (int row = 0; row < newMatrix.getRows(); row++)
+            for (int col = 0; col < newMatrix.getColumns(); col++)
                 newMatrix.data[row][col] = a.data[row][col] * b.data[row][col];
         return newMatrix;
     }
@@ -165,15 +160,14 @@ public class Matrix implements Serializable {
      * @return true if the matrices are equal, false otherwise
      */
     public static boolean equals(Matrix m1, Matrix m2) {
-        if (m1.cols != m2.cols || m1.rows != m2.rows)
+        if (m1.getColumns() != m2.getColumns() || m1.getRows() != m2.getRows())
             return false;
-        for (int i = 0; i < m1.rows; i++)
-            for (int j = 0; j < m2.cols; j++)
+        for (int i = 0; i < m1.getRows(); i++)
+            for (int j = 0; j < m2.getColumns(); j++)
                 if (m1.get(i, j) != m2.get(i, j))
                     return false;
         return true;
     }
-
 
     /**
      * comes from https://stackoverflow.com/a/49251497
@@ -225,12 +219,17 @@ public class Matrix implements Serializable {
         return minor;
     }
 
+    public int getRows() {
+        return data.length;
+    }
+
+    public int getColumns() {
+        return data[0].length;
+    }
 
     public Matrix inverse() {
         Matrix inverse = inverse(this);
         this.data = inverse.data;
-        this.cols = inverse.cols;
-        this.rows = inverse.rows;
         return this;
     }
 
@@ -242,8 +241,6 @@ public class Matrix implements Serializable {
     public Matrix transpose() {
         Matrix m = transpose(this);
         this.data = m.data;
-        this.rows = m.rows;
-        this.cols = m.cols;
         return this;
     }
 
@@ -273,8 +270,8 @@ public class Matrix implements Serializable {
      * @return this, after filling
      */
     public Matrix fill(double d) {
-        for (int row = 0; row < this.rows; row++) {
-            for (int col = 0; col < this.cols; col++) {
+        for (int row = 0; row < this.getRows(); row++) {
+            for (int col = 0; col < this.getColumns(); col++) {
                 this.data[row][col] = d;
             }
         }
@@ -306,8 +303,8 @@ public class Matrix implements Serializable {
      * @return this, after mapping
      */
     public Matrix map(IMathHelper<Double> helper) {
-        for (int row = 0; row < this.rows; row++) {
-            for (int col = 0; col < this.cols; col++) {
+        for (int row = 0; row < getRows(); row++) {
+            for (int col = 0; col < getColumns(); col++) {
                 this.data[row][col] = helper.getValue(this.data[row][col], row, col);
             }
         }
@@ -322,8 +319,8 @@ public class Matrix implements Serializable {
      * @return this, after randomizing
      */
     public Matrix randomize(double min, double max) {
-        for (int row = 0; row < this.rows; row++) {
-            for (int col = 0; col < this.cols; col++) {
+        for (int row = 0; row < getRows(); row++) {
+            for (int col = 0; col < getColumns(); col++) {
                 this.data[row][col] = ThreadLocalRandom.current().nextDouble(min, max);
             }
         }
@@ -336,8 +333,8 @@ public class Matrix implements Serializable {
      * @return this, after randomizing
      */
     public Matrix randomize() {
-        for (int row = 0; row < this.rows; row++) {
-            for (int col = 0; col < this.cols; col++) {
+        for (int row = 0; row < getRows(); row++) {
+            for (int col = 0; col < getColumns(); col++) {
                 this.data[row][col] = ThreadLocalRandom.current().nextDouble();
             }
         }
@@ -356,8 +353,8 @@ public class Matrix implements Serializable {
      */
     public void print(PrintStream stream) {
         stream.println("-------------------------------------------------");
-        for (int row = 0; row < this.rows; row++) {
-            for (int col = 0; col < this.cols; col++) {
+        for (int row = 0; row < getRows(); row++) {
+            for (int col = 0; col < getColumns(); col++) {
                 stream.print(this.data[row][col] + "\t");
             }
             stream.println();
@@ -373,12 +370,12 @@ public class Matrix implements Serializable {
      * @return this, after multiplication
      */
     public Matrix matmul(Matrix m) {
-        if (this.cols != m.rows)
+        if (this.getColumns() != m.getRows())
             throw new IllegalArgumentException("A's cols and B's rows must match!");
-        double[][] newData = new double[this.rows][m.cols];
-        for (int row = 0; row < this.rows; row++)
-            for (int col = 0; col < m.cols; col++)
-                for (int j = 0; j < this.cols; j++)
+        double[][] newData = new double[this.getRows()][m.getColumns()];
+        for (int row = 0; row < this.getRows(); row++)
+            for (int col = 0; col < m.getColumns(); col++)
+                for (int j = 0; j < this.getColumns(); j++)
                     newData[row][col] += this.data[row][j] * m.data[j][col];
         this.data = newData;
         return this;
@@ -391,11 +388,11 @@ public class Matrix implements Serializable {
      * @return this, after subtraction
      */
     public Matrix sub(Matrix m) {
-        if (m.cols != this.cols || m.rows != this.rows)
+        if (m.getColumns() != this.getColumns() || m.getRows() != this.getRows())
             throw new IllegalArgumentException("rows and columns must match!");
 
-        for (int row = 0; row < this.rows; row++)
-            for (int col = 0; col < this.cols; col++)
+        for (int row = 0; row < this.getRows(); row++)
+            for (int col = 0; col < this.getColumns(); col++)
                 this.data[row][col] -= m.data[row][col];
         return this;
     }
@@ -407,11 +404,11 @@ public class Matrix implements Serializable {
      * @return this, after addition
      */
     public Matrix add(Matrix m) {
-        if (this.cols != m.cols || this.rows != m.rows)
+        if (this.getColumns() != m.getColumns() || this.getRows() != m.getRows())
             throw new IllegalArgumentException("rows and columns must match!");
 
-        for (int row = 0; row < this.rows; row++)
-            for (int col = 0; col < this.cols; col++)
+        for (int row = 0; row < this.getRows(); row++)
+            for (int col = 0; col < this.getColumns(); col++)
                 this.data[row][col] += m.data[row][col];
         return this;
     }
@@ -423,8 +420,8 @@ public class Matrix implements Serializable {
      * @return this, after multiplication
      */
     public Matrix mult(double scl) {
-        for (int row = 0; row < this.rows; row++)
-            for (int col = 0; col < this.cols; col++)
+        for (int row = 0; row < this.getRows(); row++)
+            for (int col = 0; col < this.getColumns(); col++)
                 this.data[row][col] *= scl;
         return this;
     }
@@ -436,11 +433,11 @@ public class Matrix implements Serializable {
      * @return this after multiplication with matrix m
      */
     public Matrix hadamard(Matrix m) {
-        if (this.cols != m.cols || this.rows != m.rows)
+        if (this.getColumns() != m.getColumns() || this.getRows() != m.getRows())
             throw new IllegalArgumentException("rows and columns must match!");
 
-        for (int row = 0; row < this.rows; row++)
-            for (int col = 0; col < this.cols; col++)
+        for (int row = 0; row < this.getRows(); row++)
+            for (int col = 0; col < this.getColumns(); col++)
                 this.data[row][col] *= m.data[row][col];
         return this;
     }
@@ -454,7 +451,7 @@ public class Matrix implements Serializable {
      * @throws IllegalArgumentException if the column does not exist or the data does not fit
      */
     public Matrix setColumn(int col, double[] data) {
-        if (this.cols <= col || col < 0)
+        if (this.getColumns() <= col || col < 0)
             throw new IllegalArgumentException("This column does not exist!");
         if (this.data.length != data.length)
             throw new IllegalArgumentException("The data does not fit in the column!");
@@ -472,7 +469,7 @@ public class Matrix implements Serializable {
      * @throws IllegalArgumentException if the row does not exist or the data does not fit
      */
     public Matrix setRow(int row, double[] data) {
-        if (this.rows <= row || row < 0)
+        if (this.getRows() <= row || row < 0)
             throw new IllegalArgumentException("This row does not exist!");
         if (this.data[row].length != data.length)
             throw new IllegalArgumentException("The data does not fit in the row!");
@@ -550,10 +547,10 @@ public class Matrix implements Serializable {
     @Override
     public boolean equals(Object o) {
         if (o instanceof Matrix other) {
-            if (this.cols != other.cols || this.rows != other.rows)
+            if (this.getColumns() != other.getColumns() || this.getRows() != other.getRows())
                 return false;
-            for (int row = 0; row < this.rows; row++)
-                for (int col = 0; col < other.cols; col++)
+            for (int row = 0; row < this.getRows(); row++)
+                for (int col = 0; col < other.getColumns(); col++)
                     if (this.data[row][col] != other.data[row][col])
                         return false;
             return true;
