@@ -1,4 +1,4 @@
-package org.schlunzis.zis.ai;
+package org.schlunzis.zis.ai.nn;
 
 /**
  * This interface provides the basic methods for an activation function.

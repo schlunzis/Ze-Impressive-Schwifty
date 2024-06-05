@@ -1,4 +1,4 @@
-package org.schlunzis.zis.ai;
+package org.schlunzis.zis.ai.nn;
 
 import org.schlunzis.zis.math.linear.Matrix;
 
