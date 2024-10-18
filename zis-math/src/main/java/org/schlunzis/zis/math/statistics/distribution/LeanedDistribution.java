@@ -19,10 +19,12 @@ public class LeanedDistribution extends BoundDistribution {
      *
      * @param lowerBound lower bound for results
      * @param upperBound upper bound for results
-     * @param pseudoSkew defines the mean relative to lowerBound and upperBound.
+     * @param pseudoSkew defines the mean relative to lowerBound and upperBound. Should be a number between 0 and 1.
+     *                   0 -> lowerBound
      *                   0.5 -> first quarter
      *                   0 -> in the middle
      *                   -0.5 -> third quarter
+     *                   -1 -> upperBound
      * @param sd         the standard deviation
      */
     public LeanedDistribution(double lowerBound, double upperBound, double pseudoSkew, double sd) {
@@ -34,10 +36,12 @@ public class LeanedDistribution extends BoundDistribution {
      *
      * @param lowerBound lower bound for results
      * @param upperBound upper bound for results
-     * @param pseudoSkew defines the mean relative to lowerBound and upperBound.
+     * @param pseudoSkew defines the mean relative to lowerBound and upperBound. Should be a number between 0 and 1.
+     *                   0 -> lowerBound
      *                   0.5 -> first quarter
      *                   0 -> in the middle
      *                   -0.5 -> third quarter
+     *                   -1 -> upperBound
      * @param sd         the standard deviation
      * @param random     the random object to use
      */

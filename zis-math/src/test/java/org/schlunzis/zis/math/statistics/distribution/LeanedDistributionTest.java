@@ -37,6 +37,8 @@ class LeanedDistributionTest {
         assertEquals(2.5, leanedDistribution.getMean());
         leanedDistribution = new LeanedDistribution(0, 10, 0.75, 1);
         assertEquals(1.25, leanedDistribution.getMean());
+        leanedDistribution = new LeanedDistribution(0, 10, 1, 1);
+        assertEquals(0, leanedDistribution.getMean());
     }
 
     @Test
@@ -47,6 +49,8 @@ class LeanedDistributionTest {
         assertEquals(7.5, leanedDistribution.getMean());
         leanedDistribution = new LeanedDistribution(0, 10, -0.75, 1);
         assertEquals(8.75, leanedDistribution.getMean());
+        leanedDistribution = new LeanedDistribution(0, 10, -1, 1);
+        assertEquals(10, leanedDistribution.getMean());
     }
 
     @Test
