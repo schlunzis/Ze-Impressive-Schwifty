@@ -170,10 +170,11 @@ public class Matrix implements Serializable {
     }
 
     /**
-     * comes from https://stackoverflow.com/a/49251497
+     * Calculates the inverse of a matrix and returning it as a new matrix.
      *
-     * @param matrix
-     * @return
+     * @param matrix the matrix to invert
+     * @return the inverted matrix
+     * @see <a href="https://stackoverflow.com/a/49251497">Stackoverflow</a>
      */
     public static Matrix inverse(Matrix matrix) {
 
@@ -202,12 +203,13 @@ public class Matrix implements Serializable {
     }
 
     /**
-     * comes from <a href="https://stackoverflow.com/a/49251497">Stackoverflow</a>
+     * Calculates the minor of a matrix by removing the specified row and column.
      *
-     * @param matrix
-     * @param row
-     * @param column
-     * @return
+     * @param matrix the matrix to calculate the minor from
+     * @param row    the row to remove
+     * @param column the column to remove
+     * @return the minor of the matrix
+     * @see <a href="https://stackoverflow.com/a/49251497">Stackoverflow</a>
      */
     private static double[][] minor(double[][] matrix, int row, int column) {
         double[][] minor = new double[matrix.length - 1][matrix.length - 1];
@@ -219,14 +221,29 @@ public class Matrix implements Serializable {
         return minor;
     }
 
+    /**
+     * Getter for the number of rows.
+     *
+     * @return number of rows
+     */
     public int getRows() {
         return data.length;
     }
 
+    /**
+     * Getter for the number of columns.
+     *
+     * @return number of columns
+     */
     public int getColumns() {
         return data[0].length;
     }
 
+    /**
+     * Inverts the Matrix.
+     *
+     * @return this, after inverting
+     */
     public Matrix inverse() {
         Matrix inverse = inverse(this);
         this.data = inverse.data;
@@ -281,23 +298,20 @@ public class Matrix implements Serializable {
     /**
      * Example for adding two to every member of a randomized matrix
      *
-     * <pre>
-     * <code>
+     * <pre><code>
      *  Matrix m = new Matrix(2, 2).randomize();
      *  m.map((d, r, c) -> d + 2.0);
-     * </code>
-     * </pre>
+     * </code></pre>
+     *
      * <p>
      * Example for setting the members of the Matrix to the sum of the columns and
      * rows index (rows and columns are zero-based so we need to add two to the
      * sum):
      *
-     * <pre>
-     * <code>
+     * <pre><code>
      *  Matrix m = new Matrix(3, 3);
      *  m.map((d, r, c) -> r + c + 2);
-     * </code>
-     * </pre>
+     * </code></pre>
      *
      * @param helper functional interface to perform the mapping
      * @return this, after mapping
@@ -342,7 +356,7 @@ public class Matrix implements Serializable {
     }
 
     /**
-     * Prints the Matrix into the standard System.out PrintStream.
+     * Prints the Matrix into the standard {@link System#out} PrintStream.
      */
     public void print() {
         print(System.out);
@@ -350,6 +364,8 @@ public class Matrix implements Serializable {
 
     /**
      * Prints the Matrix into the dedicated PrintStream.
+     *
+     * @param stream the PrintStream to print into
      */
     public void print(PrintStream stream) {
         stream.println("-------------------------------------------------");

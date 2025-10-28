@@ -10,6 +10,17 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class PolynomialTest {
 
     @Test
+    void testCombine() {
+        Polynomial p = new Polynomial(new Monomial(2, 1), new Monomial(5, 1), new Monomial(1, 2));
+        p.combine();
+        assertEquals(2, p.getDegree());
+        assertEquals(2, p.getPolynomial().size());
+
+        Polynomial target = new Polynomial(new Monomial(7, 1), new Monomial(1, 2));
+        assertEquals(target, p);
+    }
+
+    @Test
     void testConstructor() {
         Polynomial p = new Polynomial();
         assertEquals(0, p.getDegree());

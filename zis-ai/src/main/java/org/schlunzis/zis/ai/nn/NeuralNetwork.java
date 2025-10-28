@@ -2,8 +2,6 @@ package org.schlunzis.zis.ai.nn;
 
 import org.schlunzis.zis.math.linear.Matrix;
 
-import java.awt.*;
-import java.awt.image.BufferedImage;
 import java.io.*;
 import java.util.Arrays;
 
@@ -243,89 +241,6 @@ public class NeuralNetwork implements Serializable {
     }
 
     /**
-     * creates a Buffered Image representing the neural networks nodes and weights
-     * with the specified background.
-     *
-     * @param background the specified color for the background
-     * @param width      the width of the image
-     * @param height     the height of the image
-     * @return a BufferedImage representing the neural network
-     */
-    public BufferedImage getSchemeImage(Color background, int width, int height) {
-        int maxNodes = 25;
-        int radius = 5, diameter = radius * 2;
-        BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
-        Graphics2D graphics = (Graphics2D) img.getGraphics();
-        if (background != null) {
-            graphics.setColor(background);
-            graphics.fillRect(0, 0, width, height);
-        }
-        // top and bottom will have 10 pixels spare to the border
-        int y_min = (int) (0.02 * height);
-        int y_max = height - y_min;
-        int x_min = (int) (0.02 * width);
-        int x_max = width - x_min;
-
-        double x = (x_max - x_min) / (double) (layers.length - 1);
-
-        // draw the weights
-        for (int layer = 0; layer < weights.length; layer++) {
-            int x_left = (int) (x_min + layer * x);
-            int x_right = (int) (x_left + x);
-            double y_spacer_left = (y_max - y_min) / Math.min(layers[layer] + 1, maxNodes);
-            double y_spacer_right = (y_max - y_min) / Math.min(layers[layer + 1] + 1, maxNodes);
-            for (int left_nodes = 0; left_nodes < Math.min(layers[layer], maxNodes); left_nodes++) {
-                for (int right_nodes = 0; right_nodes < Math.min(layers[layer + 1], maxNodes); right_nodes++) {
-                    float val = (float) weights[layer].getData()[right_nodes][left_nodes];
-                    float abs_val = Math.min(Math.abs(val), 1);
-                    graphics.setColor(new Color(val < 0 ? abs_val : 0f, val > 0 ? abs_val : 0f, 0f, abs_val));
-                    graphics.drawLine(x_left, (int) (y_min + (left_nodes + 1) * y_spacer_left), x_right,
-                            (int) (y_min + (right_nodes + 1) * y_spacer_right));
-                }
-            }
-        }
-
-        // draw nodes
-        // set node color according to bias
-        graphics.setColor(Color.BLUE);
-        for (int i = 0; i < layers.length; i++) {
-            double y = (y_max - y_min) / Math.min(layers[i] + 1, maxNodes);
-            for (int node = 0; node < Math.min(layers[i], maxNodes); node++) {
-                if (i > 0) {
-                    float val = (float) biases[i - 1].getData()[node][0];
-                    float abs_val = Math.min(Math.abs(val), 1);
-                    graphics.setColor(new Color(val < 0 ? abs_val : 0f, val > 0 ? abs_val : 0f, 0f, abs_val));
-                }
-                graphics.fillOval((int) (x_min + i * x - radius), (int) (y_min + (node + 1) * y - radius), diameter,
-                        diameter);
-
-            }
-        }
-
-        return img;
-    }
-
-    /**
-     * Create s a scheme image of the neural network with the default size 640x480 and transparent background.
-     *
-     * @return a default scheme image
-     */
-    public BufferedImage getSchemeImage() {
-        return getSchemeImage(null, 640, 480);
-    }
-
-    /**
-     * Creates a Scheme Image of the Neural Network with the specified size and a transparent background
-     *
-     * @param width  width of the image
-     * @param height height of the image
-     * @return a BufferedImage with the specified parameters
-     */
-    public BufferedImage getSchemeImage(int width, int height) {
-        return getSchemeImage(null, width, height);
-    }
-
-    /**
      * Setter for the activation function of the neural network
      *
      * @param actFunc new activation function
@@ -350,6 +265,47 @@ public class NeuralNetwork implements Serializable {
      */
     public void setLearningrate(double learningrate) {
         this.learningrate = learningrate;
+    }
+
+
+    /**
+     * Getter for the weights of the neural network.
+     *
+     * @return the weights of the neural network
+     */
+    public Matrix[] getWeights() {
+        return weights;
+    }
+
+    /**
+     * Getter for the biases of the neural network.
+     *
+     * @return the biases of the neural network
+     */
+    public Matrix[] getBiases() {
+        return biases;
+    }
+
+    /**
+     * Setter for the weights of the neural network.
+     *
+     * @param weights the new weights of the neural network
+     */
+    public void setWeights(Matrix[] weights) {
+        if (weights.length != this.weights.length)
+            throw new IllegalArgumentException("The provided weights do not match the neural networks architecture!");
+        this.weights = weights;
+    }
+
+    /**
+     * Setter for the biases of the neural network.
+     *
+     * @param biases the new biases of the neural network
+     */
+    public void setBiases(Matrix[] biases) {
+        if (biases.length != this.biases.length)
+            throw new IllegalArgumentException("The provided biases do not match the neural networks architecture!");
+        this.biases = biases;
     }
 
     /**
