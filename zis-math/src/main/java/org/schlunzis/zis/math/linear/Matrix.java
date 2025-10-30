@@ -4,7 +4,7 @@ import java.io.PrintStream;
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.Arrays;
-import java.util.concurrent.ThreadLocalRandom;
+import java.util.Random;
 
 /**
  * This class represents a Matrix and offers the possibility to work with it.
@@ -17,6 +17,8 @@ public class Matrix implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
     private double[][] data;
+
+    private Random random = new Random();
 
     /**
      * Creates a Matrix with specified number of rows and columns, initialized with
@@ -335,24 +337,19 @@ public class Matrix implements Serializable {
     public Matrix randomize(double min, double max) {
         for (int row = 0; row < getRows(); row++) {
             for (int col = 0; col < getColumns(); col++) {
-                this.data[row][col] = ThreadLocalRandom.current().nextDouble(min, max);
+                this.data[row][col] = random.nextDouble(min, max);
             }
         }
         return this;
     }
 
     /**
-     * Fills the Matrix randomly with numbers between 0 and 1
+     * Fills the Matrix randomly with numbers between 0 (inclusive) and 1 (exclusive).
      *
      * @return this, after randomizing
      */
     public Matrix randomize() {
-        for (int row = 0; row < getRows(); row++) {
-            for (int col = 0; col < getColumns(); col++) {
-                this.data[row][col] = ThreadLocalRandom.current().nextDouble();
-            }
-        }
-        return this;
+        return randomize(0d, 1d);
     }
 
     /**
@@ -558,6 +555,18 @@ public class Matrix implements Serializable {
      */
     public double[][] getData() {
         return this.data;
+    }
+
+
+    /**
+     * Sets the seed for the random number generator used in randomization.
+     *
+     * @param seed the seed to set
+     * @return this, after setting the seed
+     */
+    public Matrix setSeed(long seed) {
+        this.random.setSeed(seed);
+        return this;
     }
 
     @Override

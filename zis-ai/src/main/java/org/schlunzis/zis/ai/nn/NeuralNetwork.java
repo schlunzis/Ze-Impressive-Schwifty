@@ -38,6 +38,19 @@ public class NeuralNetwork implements Serializable {
         }
     };
 
+    public static final ActivationFunction reLU = new ActivationFunction() {
+
+        @Override
+        public double deactivate(double y) {
+            return y > 0 ? 1 : 0;
+        }
+
+        @Override
+        public double activate(double x) {
+            return Math.max(0, x);
+        }
+    };
+
     @Serial
     private static final long serialVersionUID = 1L;
     protected ActivationFunction actFunc = sigmoid;
@@ -49,7 +62,7 @@ public class NeuralNetwork implements Serializable {
      * - layers[n] -> number of nodes in nth hidden layer
      */
     protected int[] layers;
-    protected double learningrate;
+    protected double learningRate;
 
     /**
      * This array includes the weight matrices for each layer<br>
@@ -69,41 +82,41 @@ public class NeuralNetwork implements Serializable {
      * Constructor for creating a neural network with the defined parameters.
      * <p>
      * Example usage to create a neural network with 2 input nodes, 2 nodes in the first hidden layer, 2 nodes in the second hidden layer and 1 node for the output and a learningrate of 0.1:
-     * <pre>
+     * <pre><code>
      * NeuralNetwork nn = new NeuralNetwork(0.1, 2, 1, 2, 2);
-     * </pre>
+     * </code></pre>
      *
-     * @param learningrate learning rate of the neural network
-     * @param inputnodes   number of nodes in the input layer
-     * @param outputnodes  number of nodes in the output layer
-     * @param hiddennodes  number of nodes in the hidden layers. Each number represents the number of hidden nodes in the n-th layer.
+     * @param learningRate learning rate of the neural network
+     * @param inputNodes   number of nodes in the input layer
+     * @param outputNodes  number of nodes in the output layer
+     * @param hiddenNodes  number of nodes in the hidden layers. Each number represents the number of hidden nodes in the n-th layer.
      */
-    public NeuralNetwork(double learningrate, int inputnodes, int outputnodes, int... hiddennodes) {
-        this.learningrate = learningrate;
+    public NeuralNetwork(double learningRate, int inputNodes, int outputNodes, int... hiddenNodes) {
+        this.learningRate = learningRate;
 
-        this.layers = new int[hiddennodes.length + 2];
+        this.layers = new int[hiddenNodes.length + 2];
 
         // add input nodes to layers
-        if (inputnodes < 1)
-            throw new IllegalArgumentException("Inputnodes must at least be one!");
+        if (inputNodes < 1)
+            throw new IllegalArgumentException("Input nodes must at least be one!");
         else
-            this.layers[0] = inputnodes;
+            this.layers[0] = inputNodes;
 
         // add output nodes to layers
-        if (outputnodes < 1)
-            throw new IllegalArgumentException("Outputnodes must at least be one!");
+        if (outputNodes < 1)
+            throw new IllegalArgumentException("Output nodes must at least be one!");
         else
-            this.layers[layers.length - 1] = outputnodes;
+            this.layers[layers.length - 1] = outputNodes;
 
         // add hidden nodes to layers
-        if (hiddennodes.length == 0)
+        if (hiddenNodes.length == 0)
             throw new IllegalArgumentException("At least one hidden layer must be provided!");
-        for (int i = 0; i < hiddennodes.length; i++)
-            if (hiddennodes[i] < 1)
+        for (int i = 0; i < hiddenNodes.length; i++)
+            if (hiddenNodes[i] < 1)
                 throw new IllegalArgumentException(
                         "All hidden layers must at least have one neuron, which is not true for layer #" + (i + 1));
             else
-                layers[i + 1] = hiddennodes[i];
+                layers[i + 1] = hiddenNodes[i];
 
         weights = new Matrix[layers.length - 1];
         biases = new Matrix[layers.length - 1];
@@ -112,6 +125,25 @@ public class NeuralNetwork implements Serializable {
             biases[i - 1] = new Matrix(layers[i], 1).randomize(-0.5, 0.5);
         }
 
+    }
+
+    /**
+     * Constructor for creating a neural network with the defined parameters and a seed for the random number generator of the weights and biases.
+     *
+     * @param seed         seed for the random number generator
+     * @param learningRate learning rate of the neural network
+     * @param inputNodes   number of nodes in the input layer
+     * @param outputNodes  number of nodes in the output layer
+     * @param hiddenNodes  number of nodes in the hidden layers. Each number represents the number of hidden nodes in the n-th layer.
+     * @see #NeuralNetwork(double, int, int, int...)
+     */
+    public NeuralNetwork(long seed, double learningRate, int inputNodes, int outputNodes, int... hiddenNodes) {
+        this(learningRate, inputNodes, outputNodes, hiddenNodes);
+        // re-initialize weights and biases with seed
+        for (int i = 1; i < layers.length; i++) {
+            weights[i - 1] = new Matrix(layers[i], layers[i - 1]).setSeed(seed).randomize(-0.5, 0.5);
+            biases[i - 1] = new Matrix(layers[i], 1).setSeed(seed).randomize(-0.5, 0.5);
+        }
     }
 
 
@@ -198,7 +230,7 @@ public class NeuralNetwork implements Serializable {
         Matrix error = Matrix.sub(Matrix.transpose(targets_list), results[results.length - 1]);
         Matrix gradients = results[results.length - 1].map((d, r, c) -> actFunc.deactivate(d));
         gradients.hadamard(error);
-        gradients.mult(learningrate);
+        gradients.mult(learningRate);
 
         // calculate deltas
         Matrix prev_T = Matrix.transpose(results[results.length - 2]);
@@ -215,7 +247,7 @@ public class NeuralNetwork implements Serializable {
 
             gradients = results[i].map((d, r, c) -> actFunc.deactivate(d));
             gradients.hadamard(error);
-            gradients.mult(learningrate);
+            gradients.mult(learningRate);
 
             // calculate deltas
             prev_T = Matrix.transpose(results[i - 1]);
@@ -254,17 +286,17 @@ public class NeuralNetwork implements Serializable {
      *
      * @return current learning rate
      */
-    public double getLearningrate() {
-        return this.learningrate;
+    public double getLearningRate() {
+        return this.learningRate;
     }
 
     /**
      * Sets the learning rate to the given value
      *
-     * @param learningrate new learning rate
+     * @param learningRate new learning rate
      */
-    public void setLearningrate(double learningrate) {
-        this.learningrate = learningrate;
+    public void setLearningRate(double learningRate) {
+        this.learningRate = learningRate;
     }
 
 
@@ -314,7 +346,7 @@ public class NeuralNetwork implements Serializable {
      * @return independent copy of the neural network
      */
     public NeuralNetwork copy() {
-        NeuralNetwork output = new NeuralNetwork(this.learningrate, this.layers[0], this.layers[layers.length - 1],
+        NeuralNetwork output = new NeuralNetwork(this.learningRate, this.layers[0], this.layers[layers.length - 1],
                 Arrays.copyOfRange(layers, 1, layers.length - 1));
         for (int i = 0; i < weights.length; i++)
             output.weights[i] = weights[i].copy();
@@ -323,6 +355,20 @@ public class NeuralNetwork implements Serializable {
             output.biases[i] = biases[i].copy();
 
         return output;
+    }
+
+    /**
+     * Sets the seed for the random number generator of the weights and biases.
+     *
+     * @param seed the seed to set
+     */
+    public void setSeed(long seed) {
+        for (Matrix weight : this.weights) {
+            weight.setSeed(seed);
+        }
+        for (Matrix bias : this.biases) {
+            bias.setSeed(seed);
+        }
     }
 
 }
