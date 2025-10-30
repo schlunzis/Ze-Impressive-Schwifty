@@ -6,35 +6,28 @@ package org.schlunzis.zis.math.linear;
  * The systems need to be provided as matrices.
  *
  * @author JayPi4c
- * @since tbd
+ * @since 0.0.1
  */
 public class LSSolver {
 
     /**
-     * Dieser Code stammt von: <a href=
-     * "https://wiki.freitagsrunde.org/Javakurs/%C3%9Cbungsaufgaben/Gau%C3%9F-Algorithmus/Musterloesung">https://wiki.freitagsrunde.org</a>
+     *
+     * This method solves a system of linear equations represented by a matrix and a result vector using the Gaussian elimination algorithm.
      *
      * @param m the matrix to solve
      * @param v the result vector
      * @return the solution vector
+     * @see <a href="https://wiki.freitagsrunde.org/Javakurs/%C3%9Cbungsaufgaben/Gau%C3%9F-Algorithmus/Musterloesung">https://wiki.freitagsrunde.org</a>
      */
     public static Vector getSolution(Matrix m, Vector v) {
         Vector vector = v.copy();
-        // Das Gleichungssystem hat keine eindeutige Loesung!
         if (m.getData().length < m.getData()[0].length)
-            throw new IllegalArgumentException("Gleichungssystem nicht eindeutig loesbar!");
+            throw new IllegalArgumentException("Equation system cannot be solved!");
 
-        // Merken der Spalte, welche eine Zahl ungleich null besitzt
         int tmpColumn = -1;
 
-        // Alle Zeilen durchgehen: Ziel der for-Schleife -> Matrix in
-        // Zeilenstufenform bringen!
-        // -> Alle Zahlen unterhalb der Diagonale sind null
         for (int line = 0; line < m.getData().length; line++) {
             tmpColumn = -1;
-
-            // Umformungsschritt 1: Finden einer Spalte mit einem Wert ungleich
-            // null
             for (int column = 0; column < m.getData()[line].length; column++) {
                 for (int row = line; row < m.getData().length; row++) {
                     if (m.get(row, column) != 0) {
@@ -42,84 +35,59 @@ public class LSSolver {
                         break;
                     }
                 }
-
-                // Abbruch, zahl ungleich null wurde gefunden
                 if (tmpColumn != -1) {
                     break;
                 }
             }
 
-            // NullZeile(n) entdeckt!
             if (tmpColumn == -1) {
                 for (int row = line; row < m.getData().length; row++) {
-                    // Gleichungssystem hat keine Loesung!
                     if (vector.get(line) != 0)
-                        throw new IllegalArgumentException("Gleichungssystem besitzt keine Loesung!");
+                        throw new IllegalArgumentException("Equation system has no solution!");
                 }
-                // Nullzeile(n) vorhanden -> Ist das System noch eindeutig
-                // loesbar?
                 if (m.getData()[0].length - 1 >= line) {
-                    // System nicht eindeutig loesbar.
-                    throw new IllegalArgumentException("Gleichungssystem nicht eindeutig loesbar!");
+                    throw new IllegalArgumentException("Equation system cannot be solved!");
                 }
                 break;
             }
 
-            // Umformungsschritt 2: Die Zahl matrix[line][tmpColumn] soll
-            // UNgleich null sein
             if (m.get(line, tmpColumn) == 0) {
                 for (int row = line + 1; row < m.getData().length; row++) {
                     if (m.get(row, tmpColumn) != 0) {
 
-                        // Vertauschen von Zeilen -> matrix[line][tmpColumn]
-                        // wird dann ungleich null
                         swapTwoLines(line, row, m.getData(), vector);
                         break;
                     }
                 }
             }
 
-            // Umformungsschritt 3: matrix[line][tmpColumn] soll gleich 1 sein.
             if (m.get(line, tmpColumn) != 0) {
-
-                // Division der Zeile mit matrix[line][tmpColumn]
                 divideLine(line, m.get(line, tmpColumn), m.getData(), vector);
             }
 
-            // Umformungsschritt 4: Alle Zahlen unter matrix[line][tmpColumn]
-            // sollen null sein.
             for (int row = line + 1; row < m.getData().length; row++) {
-
-                // Subtraktion damit unter der Zahl im Umformungsschritt 3 nur
-                // nullen stehen
                 removeRowLeadingNumber(m.get(row, tmpColumn), line, row, m.getData(), vector);
             }
         }
 
-        // Umformungsschritt 6: Matrix in Normalform bringen (Zahlen oberhalb
-        // der Diagonale werden ebenfalls zu null)
         for (int column = m.getData()[0].length - 1; column > 0; column--) {
 
-            // Alle Werte oberhalb von "column" werden zu null
             for (int row = column; row > 0; row--) {
-                // Dazu wird Subtraktion angewandt
                 removeRowLeadingNumber(m.get(row - 1, column), column, row - 1, m.getData(), vector);
             }
         }
 
-        // Unser ehemaliger Loesungsvektor ist jetzt zu unserem Zielvektor
-        // geworden :)
         return vector;
     }
 
     /**
-     * Dieser Code stammt von: <a href=
-     * "https://wiki.freitagsrunde.org/Javakurs/%C3%9Cbungsaufgaben/Gau%C3%9F-Algorithmus/Musterloesung">https://wiki.freitagsrunde.org</a>
+     * Helper method to swap two lines in the matrix and the corresponding entries in the vector.
      *
-     * @param rowOne
-     * @param rowTwo
-     * @param matrix
-     * @param vector
+     * @param rowOne index of the first row to swap
+     * @param rowTwo index of the second row to swap
+     * @param matrix the matrix in which the rows will be swapped
+     * @param vector the vector in which the corresponding entries will be swapped
+     * @see <a href="https://wiki.freitagsrunde.org/Javakurs/%C3%9Cbungsaufgaben/Gau%C3%9F-Algorithmus/Musterloesung">https://wiki.freitagsrunde.org</a>
      */
     private static void swapTwoLines(int rowOne, int rowTwo, double[][] matrix, Vector vector) {
         double[] tmpLine;
@@ -136,13 +104,13 @@ public class LSSolver {
     }
 
     /**
-     * Dieser Code stammt von: <a href=
-     * "https://wiki.freitagsrunde.org/Javakurs/%C3%9Cbungsaufgaben/Gau%C3%9F-Algorithmus/Musterloesung">https://wiki.freitagsrunde.org</a>
+     * Helper method to divide a row in the matrix and the corresponding entry in the vector by a given divisor.
      *
-     * @param row
-     * @param div
-     * @param matrix
-     * @param vector
+     * @param row    index of the row to be divided
+     * @param div    the divisor
+     * @param matrix the matrix containing the row to be divided
+     * @param vector the vector containing the corresponding entry to be divided
+     * @see <a href="https://wiki.freitagsrunde.org/Javakurs/%C3%9Cbungsaufgaben/Gau%C3%9F-Algorithmus/Musterloesung">https://wiki.freitagsrunde.org</a>
      */
     private static void divideLine(int row, double div, double[][] matrix, Vector vector) {
         for (int column = 0; column < matrix[row].length; column++) {
@@ -152,14 +120,14 @@ public class LSSolver {
     }
 
     /**
-     * Dieser Code stammt von: <a href=
-     * "https://wiki.freitagsrunde.org/Javakurs/%C3%9Cbungsaufgaben/Gau%C3%9F-Algorithmus/Musterloesung">https://wiki.freitagsrunde.org</a>
+     * Helper method to eliminate the leading number of a specified row in the matrix and adjust the corresponding entry in the vector.
      *
-     * @param factor
-     * @param rowRoot
-     * @param row
-     * @param matrix
-     * @param vector
+     * @param factor  the factor used to eliminate the leading number
+     * @param rowRoot index of the row used as the root for elimination
+     * @param row     index of the row to be modified
+     * @param matrix  the matrix containing the rows to be modified
+     * @param vector  the vector containing the corresponding entry to be modified
+     * @see <a href="https://wiki.freitagsrunde.org/Javakurs/%C3%9Cbungsaufgaben/Gau%C3%9F-Algorithmus/Musterloesung">https://wiki.freitagsrunde.org</a>
      */
     private static void removeRowLeadingNumber(double factor, int rowRoot, int row, double[][] matrix, Vector vector) {
         for (int column = 0; column < matrix[row].length; column++) {

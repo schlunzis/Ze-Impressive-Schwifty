@@ -8,8 +8,8 @@ package org.schlunzis.zis.math.linear;
  */
 public class Vector {
 
-    private double data[];
-    private int rows;
+    private final double[] data;
+    private final int rows;
 
     /**
      * Creates an empty vector with the given size.
@@ -76,11 +76,8 @@ public class Vector {
      *
      * @param index index of the value
      * @return value at the index
-     * @throws IndexOutOfBoundsException if the index is not in the data
      */
     public double get(int index) {
-        if (index >= data.length || index < 0)
-            throw new IndexOutOfBoundsException("Der index ist nicht in der data vorhanden!");
         return this.data[index];
     }
 
@@ -89,11 +86,8 @@ public class Vector {
      *
      * @param index index of the value
      * @param value new value
-     * @throws IndexOutOfBoundsException if the index is not in the data
      */
     public void set(int index, double value) {
-        if (index >= data.length || index < 0)
-            throw new IndexOutOfBoundsException("Der index ist nicht in der data vorhanden!");
         this.data[index] = value;
     }
 }

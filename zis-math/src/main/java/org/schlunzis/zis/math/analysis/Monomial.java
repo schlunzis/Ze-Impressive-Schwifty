@@ -169,4 +169,12 @@ public class Monomial {
         return new Monomial(this.coefficient, this.degree);
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+        Monomial monomial = (Monomial) obj;
+        return degree == monomial.degree &&
+                Double.compare(monomial.coefficient, coefficient) == 0;
+    }
 }

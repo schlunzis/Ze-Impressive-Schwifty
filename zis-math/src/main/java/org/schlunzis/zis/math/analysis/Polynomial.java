@@ -1,6 +1,5 @@
 package org.schlunzis.zis.math.analysis;
 
-import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -48,10 +47,10 @@ public class Polynomial {
      * Create a polynomial with the degrees and coefficients.
      * The coefficients and degrees must be of the same length.
      * Example usage:
-     * <pre>
+     * <pre><code>
      *     // f(x) = 2x + 0.5x^3
      *     Polynomial p = new Polynomial(new double[]{2, 0.5}, new int[]{1, 3});
-     * </pre>
+     * </code></pre>
      *
      * @param coefficients array of coefficients
      * @param degrees      array of degrees
@@ -119,17 +118,19 @@ public class Polynomial {
     }
 
     /**
-     * This function combines the monomials with the same degrees. Example:
-     * <pre>
+     * This function combines the monomials with the same degrees.
+     * <p>
+     * Example:
+     * <pre><code>
      *     // f(x) = 2x + 5x +x^2
      *     Polynomial p = new Polynomial(new Monomial(2, 1), new Monomial(5, 1), new Monomial(1, 2));
      *     p.combine();
      *     // f(x) = 7x + x^2
-     * </pre>
+     * </code></pre>
      */
     public void combine() {
-        for (int i = 0; i < this.polynomial.size() - 1; i++) {
-            for (int j = i + 1; j < this.polynomial.size(); j++) {
+        for (int i = this.polynomial.size() - 1; i >= 1; i--) {
+            for (int j = i - 1; j >= 0; j--) {
                 Monomial a = this.polynomial.get(i);
                 Monomial b = this.polynomial.get(j);
                 if (a.isCombinable(b)) {
@@ -202,16 +203,6 @@ public class Polynomial {
                 degree = d;
         }
         return degree;
-    }
-
-    /**
-     * Prints the Polynomial into the PrintStream.
-     *
-     * @param stream PrintStream to print the Polynomial
-     * @deprecated
-     */
-    public void print(PrintStream stream) {
-        stream.println(getFormula());
     }
 
     // https://de.wikipedia.org/wiki/Polynomdivision#Algorithmus
@@ -299,6 +290,19 @@ public class Polynomial {
      */
     public List<Monomial> getPolynomial() {
         return this.polynomial;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+        Polynomial that = (Polynomial) obj;
+        if (this.polynomial.size() != that.polynomial.size()) return false;
+        for (int i = 0; i < this.polynomial.size(); i++) {
+            if (!this.polynomial.get(i).equals(that.polynomial.get(i)))
+                return false;
+        }
+        return true;
     }
 
 }
