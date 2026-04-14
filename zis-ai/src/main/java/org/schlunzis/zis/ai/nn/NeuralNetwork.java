@@ -146,32 +146,39 @@ public class NeuralNetwork implements Serializable {
         }
     }
 
+    /**
+     * Serializes the neural network into a provided file.
+     *
+     * @param target the file to write the neural network object to
+     * @throws IOException if an error occurs while writing the file
+     */
+    public void serialize(File target) throws IOException {
+        serialize(this, target);
+    }
 
     /**
      * Serializes a given neural network object to a file. The file will be saved in the same directory as the program. Using {@link #deserialize(File)} the object can be loaded again.
      *
-     * @param nn the neural network object to serialize
+     * @param nn     the neural network object to serialize
+     * @param target the file to write the neural network object to
      * @throws IOException if an error occurs while writing the file
      * @see #deserialize(File)
      */
-    public static void serialize(NeuralNetwork nn) throws IOException {
-        String absolutePath = new File(".").getAbsolutePath();
-        File file = new File(absolutePath);
-        absolutePath = file.getParentFile().toString();
-        FileOutputStream fos = new FileOutputStream(absolutePath + "/NeuralNetwork.nn");
+    public static void serialize(NeuralNetwork nn, File target) throws IOException {
+        FileOutputStream fos = new FileOutputStream(target);
         ObjectOutputStream oos = new ObjectOutputStream(fos);
         oos.writeObject(nn);
         oos.close();
     }
 
     /**
-     * Deserializes a neural network object from a file. The file must be created by {@link #serialize(NeuralNetwork)}.
+     * Deserializes a neural network object from a file. The file must be created by {@link #serialize(NeuralNetwork, File)}.
      *
      * @param f the file to deserialize
      * @return the deserialized neural network object
      * @throws IOException            if an error occurs while reading the file
      * @throws ClassNotFoundException if the class of the object in the file cannot be found
-     * @see #serialize(NeuralNetwork)
+     * @see #serialize(NeuralNetwork, File)
      */
     public static NeuralNetwork deserialize(File f) throws IOException, ClassNotFoundException {
         FileInputStream fis = new FileInputStream(f);
