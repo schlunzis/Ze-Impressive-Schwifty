@@ -1,12 +1,14 @@
 package org.schlunzis.zis.ai.nn;
 
+import java.io.Serializable;
+
 /**
  * This interface provides the basic methods for an activation function.
  *
  * @author JayPi4c
  * @since 0.0.1
  */
-public interface ActivationFunction {
+public interface ActivationFunction extends Serializable {
 
     /**
      * This function activates the given value.
