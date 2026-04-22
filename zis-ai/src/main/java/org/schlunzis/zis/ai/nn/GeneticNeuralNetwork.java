@@ -64,6 +64,26 @@ public class GeneticNeuralNetwork extends NeuralNetwork {
     }
 
     /**
+     * A portion (mutation rate) of the weights in the network are randomly reassigned through a mutation of the neural network.
+     * <p>
+     * This function modifies the calling neural network object. This means that the return value of this function does not necessarily have to be used.
+     *
+     * @param mutationRate  The rate of mutation. The higher the rate, the more weights are mutated.
+     * @param weightMutator The mutator to use for mutation of weights. This allows for custom mutation strategies.
+     * @param biasMutator   The mutator to use for mutation of biases. This allows for custom mutation strategies.
+     * @return this, after mutation
+     */
+    public GeneticNeuralNetwork mutate(double mutationRate, Mutator weightMutator, Mutator biasMutator) {
+        for (Matrix weight : this.weights) {
+            weight.map((d, r, c) -> random.nextDouble() < mutationRate ? weightMutator.mutate(mutationRate, d, r, c) : d);
+        }
+        for (Matrix bias : this.biases) {
+            bias.map((d, r, c) -> random.nextDouble() < mutationRate ? biasMutator.mutate(mutationRate, d, r, c) : d);
+        }
+        return this;
+    }
+
+    /**
      * Via crossover of two neural networks, a random mix of these two networks is created, as in real DNA.
      *
      * @param other The other neural network to crossover with.
