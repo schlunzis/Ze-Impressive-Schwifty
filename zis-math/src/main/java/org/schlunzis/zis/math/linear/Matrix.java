@@ -63,13 +63,14 @@ public class Matrix implements Serializable {
         if (a.getColumns() != b.getRows())
             throw new IllegalArgumentException("A's cols and B's rows must match!");
 
-        double[][] newData = new double[a.getRows()][b.getColumns()];
+        Matrix newMatrix = new Matrix(a.getRows(), b.getColumns());
+        double[][] newData = newMatrix.data;
         for (int row = 0; row < a.getRows(); row++)
             for (int col = 0; col < b.getColumns(); col++)
                 for (int j = 0; j < a.getColumns(); j++)
                     newData[row][col] += a.data[row][j] * b.data[j][col];
 
-        return new Matrix(newData);
+        return newMatrix;
     }
 
     /**
