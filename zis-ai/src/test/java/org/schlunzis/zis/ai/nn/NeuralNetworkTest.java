@@ -11,10 +11,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class NeuralNetworkTest {
 
     final Matrix[][] xOrData = new Matrix[][]{{
-            new Matrix(new double[][]{{0, 0}}), new Matrix(new double[][]{{0}})},
-            {new Matrix(new double[][]{{0, 1}}), new Matrix(new double[][]{{1}})},
-            {new Matrix(new double[][]{{1, 0}}), new Matrix(new double[][]{{1}})},
-            {new Matrix(new double[][]{{1, 1}}), new Matrix(new double[][]{{0}})
+            new Matrix(new double[][]{{0}, {0}}), new Matrix(new double[][]{{0}})},
+            {new Matrix(new double[][]{{0}, {1}}), new Matrix(new double[][]{{1}})},
+            {new Matrix(new double[][]{{1}, {0}}), new Matrix(new double[][]{{1}})},
+            {new Matrix(new double[][]{{1}, {1}}), new Matrix(new double[][]{{0}})
             }};
 
     @Test
@@ -36,7 +36,7 @@ class NeuralNetworkTest {
             Matrix input = xOrDatum[0];
             double predicted = nn.query(input).get(0, 0);
             double expected = xOrDatum[1].get(0, 0);
-            assertTrue(Math.abs(expected - predicted) < 0.2, "Input: " + input.get(0, 0) + ", " + input.get(0, 1) +
+            assertTrue(Math.abs(expected - predicted) < 0.2, "Input: " + input.get(0, 0) + ", " + input.get(1, 0) +
                     " | Expected: " + expected + " | Predicted: " + predicted);
         }
     }
@@ -48,7 +48,7 @@ class NeuralNetworkTest {
             Matrix input = xOrDatum[0];
             double predicted = nn.query(input).get(0, 0);
             double expected = xOrDatum[1].get(0, 0);
-            assertTrue(Math.abs(expected - predicted) < 0.2, "Input: " + input.get(0, 0) + ", " + input.get(0, 1) +
+            assertTrue(Math.abs(expected - predicted) < 0.2, "Input: " + input.get(0, 0) + ", " + input.get(1, 0) +
                     " | Expected: " + expected + " | Predicted: " + predicted);
         }
     }
