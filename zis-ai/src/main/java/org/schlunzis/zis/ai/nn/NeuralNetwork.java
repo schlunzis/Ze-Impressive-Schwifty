@@ -197,7 +197,7 @@ public class NeuralNetwork implements Serializable {
      */
     public Matrix query(Matrix inputs_list) {
 
-        Matrix matrix = Matrix.transpose(inputs_list);
+        Matrix matrix = inputs_list;
         for (int i = 0; i < weights.length; i++) {
             matrix = Matrix.matmul(weights[i], matrix);
             matrix.add(biases[i]);
@@ -227,14 +227,14 @@ public class NeuralNetwork implements Serializable {
     public void train(Matrix inputs_list, Matrix targets_list) {
 
         Matrix[] results = new Matrix[weights.length + 1];
-        results[0] = Matrix.transpose(inputs_list);
+        results[0] = inputs_list.copy();
         for (int i = 0; i < weights.length; i++) {
             results[i + 1] = Matrix.matmul(weights[i], results[i]);
             results[i + 1].add(biases[i]);
             results[i + 1].map((d, r, c) -> actFunc.activate(d));
         }
 
-        Matrix error = Matrix.sub(Matrix.transpose(targets_list), results[results.length - 1]);
+        Matrix error = Matrix.sub(targets_list, results[results.length - 1]);
         Matrix gradients = results[results.length - 1].map((d, r, c) -> actFunc.deactivate(d));
         gradients.hadamard(error);
         gradients.mult(learningRate);

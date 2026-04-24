@@ -18,6 +18,10 @@ public class GeneticNeuralNetwork extends NeuralNetwork {
 
     private double mutationRate;
 
+    private final Matrix[] weightMutationRates;
+    private final Matrix[] biasMutationRates;
+
+
     private final Random random = new Random();
 
     /**
@@ -34,6 +38,18 @@ public class GeneticNeuralNetwork extends NeuralNetwork {
                                 int... hiddenNodes) {
         super(learningRate, inputNodes, outputNodes, hiddenNodes);
         this.mutationRate = mutationRate;
+        this.weightMutationRates = new Matrix[this.weights.length];
+        for (int i = 0; i < weights.length; i++) {
+            Matrix mutationRates = new Matrix(weights[i].getRows(), weights[i].getColumns())
+                    .fill(mutationRate);
+            this.weightMutationRates[i] = mutationRates;
+        }
+        this.biasMutationRates = new Matrix[this.biases.length];
+        for (int i = 0; i < biases.length; i++) {
+            Matrix mutationRates = new Matrix(weights[i].getRows(), weights[i].getColumns())
+                    .fill(mutationRate);
+            this.biasMutationRates[i] = mutationRates;
+        }
     }
 
     /**
@@ -54,11 +70,45 @@ public class GeneticNeuralNetwork extends NeuralNetwork {
      * @return this, after mutation
      */
     public GeneticNeuralNetwork mutate(double mutationRate) {
-        for (Matrix weight : this.weights) {
-            weight.map((d, r, c) -> random.nextDouble() < mutationRate ? random.nextDouble() - 0.5 : d);
+        return mutate(mutationRate, Mutators.uniform(), Mutators.uniform());
+    }
+
+    /**
+     * A portion (mutation rate) of the weights in the network are randomly reassigned through a mutation of the neural network.
+     * <p>
+     * This function modifies the calling neural network object. This means that the return value of this function does not necessarily have to be used.
+     *
+     * @param mutationRate  The rate of mutation. The higher the rate, the more weights are mutated.
+     * @param weightMutator The mutator to use for mutation of weights. This allows for custom mutation strategies.
+     * @param biasMutator   The mutator to use for mutation of biases. This allows for custom mutation strategies.
+     * @return this, after mutation
+     */
+    public GeneticNeuralNetwork mutate(double mutationRate, Mutator weightMutator, Mutator biasMutator) {
+        for (int i = 0; i < this.weights.length; i++) {
+            Matrix weight = this.weights[i];
+            final int finalI = i;
+            weight.map((d, r, c) -> {
+                double oldMutationRate = this.weightMutationRates[finalI].get(r, c);
+
+                double z = random.nextGaussian();
+                double newMutationRate = oldMutationRate * Math.exp(z);
+                this.weightMutationRates[finalI].set(r, c, newMutationRate);
+
+                return random.nextDouble() < mutationRate ? weightMutator.mutate(random, newMutationRate, d, r, c) : d;
+            });
         }
-        for (Matrix bias : this.biases) {
-            bias.map((d, r, c) -> random.nextDouble() < mutationRate ? random.nextDouble() - 0.5 : d);
+        for (int i = 0; i < this.biases.length; i++) {
+            Matrix bias = this.biases[i];
+            final int finalI = i;
+            bias.map((d, r, c) -> {
+                double oldMutationRate = this.biasMutationRates[finalI].get(r, c);
+
+                double z = random.nextGaussian();
+                double newMutationRate = oldMutationRate * Math.exp(z);
+                this.biasMutationRates[finalI].set(r, c, newMutationRate);
+
+                return random.nextDouble() < mutationRate ? biasMutator.mutate(random, newMutationRate, d, r, c) : d;
+            });
         }
         return this;
     }
